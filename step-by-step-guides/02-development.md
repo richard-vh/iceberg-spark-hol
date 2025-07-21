@@ -13,6 +13,18 @@ We will prototype and test the Iceberg Merge Into and Incremental Read Operation
 
 #### Offloading a Snowflake table to Cloudera Iceberg using Spark 
 
+In Cloudera's Control Plane management Console, navigate to enviornments and select your training enviornment. 
+
+![alt text](../img/env-select.png)
+
+Under the enviornment navigate to the Data Hubs tab and select the HOL Data Hub.
+
+![alt text](../img/datahub-select.png)
+
+In the Data Hub, choose Nodes froim the left hand menu and click the button to copy the public IP address of the master node.
+
+![alt text](../img/datahub-ipadress.png)
+
 SSH onto the master node of our Cloudera Data Engineering data Hub. Substitute the user for your userxxx number and provide the password when prompted.
 ```
 ssh <userxxx>@<ip_adress>
@@ -32,12 +44,12 @@ val snow_reader = spark.read.format("jdbc").option("url", "jdbc:snowflake://ZWJV
 
 Next, execute the Spark read using the load command below
 ```
-val snowball = snow_reader.load()
+val df = snow_reader.load()
 ```
 
 Display the dataframe data
 ```
-snowball.show(5,false)
+df.show(5,false)
 ```
 
 You should see the Snowflake table data displayed in your dataframe in Spark
