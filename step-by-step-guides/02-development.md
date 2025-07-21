@@ -42,7 +42,7 @@ snowball.show(5,false)
 
 You should see the Snowflake table data displayed in your dataframe in Spark
 
-![alt text](../../img/docker-container-launch.png)
+![alt text](../../img/spark4.png)
 
 You now have access to all lab materials from the JupyterLab IDE in the left pane. From here, you can launch notebooks and run the terminal.
 
