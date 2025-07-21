@@ -36,10 +36,10 @@ On the master node let's open a spark-shell and reference the Snowflake JDBC dri
 spark3-shell --jars /opt/cloudera/parcels/CDH/jars/snowflake-jdbc-3.9.2.jar --driver-class-path /opt/cloudera/parcels/CDH/jars/snowflake-jdbc-3.9.2.jar
 ```
 
-At the Scala prompt set up  Spark read to point to the Swowflake table we want to ingest. Substitute the poassword etc.
+At the Scala prompt set up Spark read to point to the Swowflake table we want to ingest. Your HOL facilitator will provide the <account-name>, <username> and <password> for you to substitute in the code below.
 
 ```
-val snow_reader = spark.read.format("jdbc").option("url", "jdbc:snowflake://ZWJVSQP-AN41572.snowflakecomputing.com/?warehouse=COMPUTE_WH&db=snowflake_sample_data&schema=tpch_sf1").option("dbtable","snowflake_sample_data.tpch_sf1.region").option("user", "rvanheerden").option("password", "<password>")
+val snow_reader = spark.read.format("jdbc").option("url", "jdbc:snowflake://<account-name>.snowflakecomputing.com/?warehouse=COMPUTE_WH&db=snowflake_sample_data&schema=tpch_sf1").option("dbtable","snowflake_sample_data.tpch_sf1.region").option("user", "<username>").option("password", "<password>")
 ```
 
 Next, execute the Spark read using the load command below
@@ -54,11 +54,19 @@ df.show(5,false)
 
 You should see the Snowflake table data displayed in your dataframe in Spark
 
-![alt text](../img/spark4.png)
+![alt text](../img/spark1.png)
 
-You now have access to all lab materials from the JupyterLab IDE in the left pane. From here, you can launch notebooks and run the terminal.
+Once we have the Snowflake data in the Spark dataframe we can write this data to an Iceberg V2 table in the Cloudera Data Lakehouse.
 
-![alt text](../../img/jl-home.png)
+To create a new Iceberg table use the Spark Dataframe writeTo method. Specify the new table name subsititing user username userrxxx. Note the storage format we're using is Parquet and the Iceberg table version is version 2.
+```
+df.writeTo("intelos_demo.<userxxx>_region").using("iceberg").tableProperty("write.format.default","parquet").tableProperty("format-version","2").createOrReplace()
+```
+Finally let's show the Snowflake copiued data in our CDP Iceberg table
+```
+spark.sql("select * from intelos_demo.<userxxx>_region").show(5, false)
+```
+![alt text](../img/spark2.png)
 
 You will use the terminal in the IDE to run the CDE CLI commands for the labs. First you need to configure the CLI and install Spark Connect though.
 
