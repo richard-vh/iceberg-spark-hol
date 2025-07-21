@@ -1,4 +1,4 @@
-# Spark Application Development in CDE
+# Spark Iceberg Application Development in Cloudera Data Engieering Data Hubs
 
 ![alt text](../../img/spark-connect-slide.png)
 
