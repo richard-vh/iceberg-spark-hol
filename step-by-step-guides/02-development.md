@@ -1,4 +1,4 @@
-# Spark Iceberg Application Development in Cloudera Data Engieering Data Hubs
+# Spark Application Development in Cloudera Data Engineering Data Hub
 
 ![alt text](../../img/spark-connect-slide.png)
 
@@ -11,22 +11,36 @@ We will prototype and test the Iceberg Merge Into and Incremental Read Operation
 
 ## Lab 1. Spark Application Development
 
-#### Pull the Docker Container and Launch the IDE
+#### Offloading a Snowflake table to Cloudera Iceberg using Spark 
 
-Clone the GitHub repository in your local machine.
-
+SSH onto the master node of our Cloudera Data Engineering data Hub. Substitute the user for your userxxx number and provide the password when prompted.
 ```
-git clone https://github.com/richard-vh/CDE_123_HandsOnLab.git
-cd CDE_123_HOL
+ssh <userxxx>@<ip_adress>
 ```
 
-Launch the Docker container.
+On the master node let's open a spark-shell and reference the Snowflake JDBC driver
 
 ```
-docker run -p 8888:8888 rvanheerden/cde123hol
+spark3-shell --jars /opt/cloudera/parcels/CDH/jars/snowflake-jdbc-3.9.2.jar --driver-class-path /opt/cloudera/parcels/CDH/jars/snowflake-jdbc-3.9.2.jar
 ```
 
-Launch the JupyterLab IDE in your browser by copy and pasting the provided url as shown below.
+At the Scala prompt set up  Spark read to point to the Swowflake table we want to ingest. Substitute the poassword etc.
+
+```
+val snow_reader = spark.read.format("jdbc"). option("url", "jdbc:snowflake://ZWJVSQP-AN41572.snowflakecomputing.com/?warehouse=COMPUTE_WH&db=snowflake_sample_data&schema=tpch_sf1").option("dbtable","snowflake_sample_data.tpch_sf1.region").option("user", "rvanheerden").option("password", "<password>")
+```
+
+Next, execute the Spark read using the load command below
+```
+val snowball = snow_reader.load()
+```
+
+Display the dataframe data
+```
+snowball.show(5,false)
+```
+
+You should see the Snowflake table data displayed in your dataframe in Spark
 
 ![alt text](../../img/docker-container-launch.png)
 
