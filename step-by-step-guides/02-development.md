@@ -9,11 +9,13 @@
 
 We will prototype and test the Iceberg Merge Into and Incremental Read Operations.
 
-## Lab 1. Spark Application Development
+## Lab 1. Importing a Snowflake table to a Cloudera Data Lakehouse Iceberg table using Spark 
 
-#### Offloading a Snowflake table to Cloudera Iceberg using Spark 
+In Cloudera's Control Plane select the Management Console.
 
-In Cloudera's Control Plane management Console, navigate to enviornments and select your training enviornment. 
+![alt text](../img/mgmtconsole-select.png)
+
+Select Enviornments from the menu and select your training enviornment. 
 
 ![alt text](../img/env-select.png)
 
