@@ -68,7 +68,7 @@ spark.sql("select * from intelos_demo.<userxxx>_region").show(5, false)
 ```
 ![alt text](../img/spark2.png)
 
-You will use the terminal in the IDE to run the CDE CLI commands for the labs. First you need to configure the CLI and install Spark Connect though.
+### Well done. You've just imported your first Snowflake table into a Cloudera Data Lakehouse Iceberg table
 
 #### Configure the CDE CLI and Install Spark Connect for CDE.
 
