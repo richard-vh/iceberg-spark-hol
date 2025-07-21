@@ -27,7 +27,7 @@ spark3-shell --jars /opt/cloudera/parcels/CDH/jars/snowflake-jdbc-3.9.2.jar --dr
 At the Scala prompt set up  Spark read to point to the Swowflake table we want to ingest. Substitute the poassword etc.
 
 ```
-val snow_reader = spark.read.format("jdbc"). option("url", "jdbc:snowflake://ZWJVSQP-AN41572.snowflakecomputing.com/?warehouse=COMPUTE_WH&db=snowflake_sample_data&schema=tpch_sf1").option("dbtable","snowflake_sample_data.tpch_sf1.region").option("user", "rvanheerden").option("password", "<password>")
+val snow_reader = spark.read.format("jdbc").option("url", "jdbc:snowflake://ZWJVSQP-AN41572.snowflakecomputing.com/?warehouse=COMPUTE_WH&db=snowflake_sample_data&schema=tpch_sf1").option("dbtable","snowflake_sample_data.tpch_sf1.region").option("user", "rvanheerden").option("password", "<password>")
 ```
 
 Next, execute the Spark read using the load command below
