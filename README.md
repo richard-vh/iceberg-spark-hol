@@ -2,7 +2,7 @@
 
 ![alt text](/img/new-ref-arch.png)
 
-## About the Apache Iceberg on Cloudera Data Platform Hands On Lab
+## About this Hands On Lab
 
 This hands-on lab provides a comprehensive exploration of Apache Iceberg's capabilities within the Cloudera Data Platform. The agenda is structured into two main sections.
 
@@ -12,7 +12,7 @@ The second section demonstrates Iceberg's role as a unified table format across 
 
 ## Agenda & Times
 
-Section 1: Spark on Cloudera Data Engineering Data Hubs
+### Section 1: Spark on Cloudera Data Engineering Data Hubs
 1. Creating Iceberg Tables
     * Creating an Iceberg Table 
     * Validate the HDFS Location
@@ -42,7 +42,7 @@ Section 1: Spark on Cloudera Data Engineering Data Hubs
     * Iceberg Compaction
     * Iceberg Expiring Snapshots
       
-Section 2: Demonstrating Iceberg Capabilities across the Data Lifecycle and Cloudera Product Stack
+### Section 2: Demonstrating Iceberg Capabilities across the Data Lifecycle and Cloudera Product Stack
 1. Using Iceberg with Cloudera Data Flow
     * blah
 3. Using Iceberg with Apache Hive on Cloudera Data Warehouse
