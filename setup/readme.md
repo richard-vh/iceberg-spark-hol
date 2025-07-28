@@ -12,3 +12,19 @@
 ![alt text](/img/gatewaynode.png)
 
 5. Click **Provision Cluster** button.
+
+## Install JupyterLab on Data Engineering Data Hub Gateway Node
+
+**If you decided to not use JupyterLab in step 4 above then you don't need to do this!**
+
+1. Make sure you have sudo access to the Data Hub.
+2. Next we need to create a group in CDP to control access to JupyterLab once it has been installed.
+3. In your CDP tenant go to User Management and create a new Group.
+4. Give you group a name and ensure Sync Membership is disabled.
+5. Create the group.
+6. Add members to the group. This will be the userxx1 to userxxx for your HOL participants.
+
+![alt text](/img/jupyterlabgroup.png)
+   
+8. SSH onto the Data Hub Gateway node.
+9. 
