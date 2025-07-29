@@ -30,8 +30,8 @@
 9. Run the following commands invidually at the command prompt
 ```
 sudo -i
-wget https://repo.anaconda.com/archive/Anaconda3-5.2.0-Linux-x86_64.sh
-bash Anaconda3-5.2.0-Linux-x86_64.sh -b -p /opt/anaconda3
+wget https://repo.anaconda.com/archive/Anaconda3-2024.02-1-Linux-x86_64.sh
+bash Anaconda3-2024.02-1-Linux-x86_64.sh -b -p /opt/anaconda3
 /opt/anaconda3/bin/conda init
 /opt/anaconda3/bin/conda config --set auto_activate_base false
 conda install -c conda-forge jupyterhub
