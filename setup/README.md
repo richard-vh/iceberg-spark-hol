@@ -63,7 +63,7 @@ cat /var/lib/cloudera-scm-agent/agent-cert/cm-auto-host_key.pw
 ```
 11. Create a systemd unit file.
 ```
-cat /etc/systemd/system/jupyterhub.service
+vi /etc/systemd/system/jupyterhub.service
 ```
 Paste the text below, replacing the CONFIGPROXY_SSL_KEY_PASSPHRASE with the phassphrase obtained in the step above.
 
