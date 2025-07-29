@@ -34,6 +34,7 @@ wget https://repo.anaconda.com/archive/Anaconda3-2024.02-1-Linux-x86_64.sh
 bash Anaconda3-2024.02-1-Linux-x86_64.sh -b -p /opt/anaconda3
 /opt/anaconda3/bin/conda init
 /opt/anaconda3/bin/conda config --set auto_activate_base false
+source .bashrc
 conda install -c conda-forge jupyterhub
 conda develop /opt/cloudera/parcels/CDH/lib/spark3/python/lib/py4j-*-src.zip
 conda develop /opt/cloudera/parcels/CDH/lib/spark3/python
