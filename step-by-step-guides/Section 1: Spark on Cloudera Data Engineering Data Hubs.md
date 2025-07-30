@@ -1,4 +1,4 @@
-# Spark Application Development in Cloudera Data Engineering Data Hub
+# Section 1: Spark on Cloudera Data Engineering Data Hubs
 
 ## Lab 1. Importing a Snowflake table to a Cloudera Data Lakehouse Iceberg table using Spark 
 
