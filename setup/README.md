@@ -27,7 +27,7 @@
 ![alt text](/img/jupyterlabgroup.png)
    
 8. SSH onto the Data Hub Gateway node.
-9. Run the following commands invidually at the command prompt
+9. Run the following commands invidually at the command prompt. We're going to install a specific version of Anancoda (Anaconda3-2024.02-1-Linux-x86_64.sh) to make sure it's using Python 3.11 to match with the Python 3.11 version used for Spark on the Data Hub Data Engineering cluster.
 ```
 sudo -i
 wget https://repo.anaconda.com/archive/Anaconda3-2024.02-1-Linux-x86_64.sh
@@ -35,6 +35,7 @@ bash Anaconda3-2024.02-1-Linux-x86_64.sh -b -p /opt/anaconda3
 /opt/anaconda3/bin/conda init
 /opt/anaconda3/bin/conda config --set auto_activate_base false
 source .bashrc
+conda activate base
 conda install -c conda-forge jupyterhub
 conda develop /opt/cloudera/parcels/CDH/lib/spark3/python/lib/py4j-*-src.zip
 conda develop /opt/cloudera/parcels/CDH/lib/spark3/python
@@ -78,8 +79,22 @@ ExecStart=/opt/anaconda3/bin/jupyterhub -f /etc/jupyterhub/jupyterhub_config.py
 [Install]
 WantedBy=multi-user.target
 ```
+12. Add Pyspark the following enviornment variables to the JupyterHub base kernel spec
+```
+vi /opt/anaconda3/share/jupyter/kernels/python3/kernel.json
+```
+```
+ "env": {
+  "PYSPARK_PYTHON": "/opt/cloudera/cm-agent/bin/python",
+  "PYSPARK_DRIVER_PYTHON":"/opt/cloudera/cm-agent/bin/python",
+  "PYTHONSTARTUP": "/usr/bin/pyspark3"
+ },
+```
+The file should like like this now
 
-12. Run the following commands invidually at the command prompt
+![alt text](/img/kernelspec.png)
+
+13. Run the following commands invidually at the command prompt
 ```
 systemctl daemon-reload
 systemctl enable jupyterhub
@@ -89,7 +104,7 @@ You can check the logs:
 ```
 journalctl -u jupyterhub -f
 ```
-13. Open a browser at the URL and test that you can login with your CDP workload username and password.
+14. Open a browser at the URL and test that you can login with your CDP workload username and password.
 ```
 http://<gateway_node_fqdn>:9443
 ```
