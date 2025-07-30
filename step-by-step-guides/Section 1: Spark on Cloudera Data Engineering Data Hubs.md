@@ -40,7 +40,7 @@ Dropping the table deletes all data.
 1. In JupyterLb create a new notebook by selecting **File -> New -> Notebook**.
 2. Click the **Select** button to acceopt the default kernel **Python3 (ipykernel)**.
 
-![alt text](../img/jupyter2.png)
+![alt text](../img/jupyter1.png)
 
 3. In the first cell of the new notebook paste the code below, substituting you assigned username in the username variable e.g. user003. This is going to create a Spark application on the Data Hub cluster.
 
@@ -57,7 +57,7 @@ spark = SparkSession.builder \
 
 4. Execute the cell code by clicking the **⏵** button or you can select cmd+enter on your keyboard to do the same.
 
-![alt text](../img/jupyter1.png)
+![alt text](../img/jupyter2.png)
 
 5. 
 
