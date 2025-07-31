@@ -97,7 +97,7 @@ spark.sql("""
     ('IT', 'Italy', 60262770, 301340.0)
 """.format(username))
 ```
-![alt text](../img/jupyter2.png)
+![alt text](../img/jupyter3.png)
 
 2.Add a new cell to the notebook and run each code block below to query the table.
 ```
@@ -138,7 +138,48 @@ The create table statement give us the the current table DDL, including the stor
 | Compaction Requirement	| Not required frequently	| Required periodically to merge delete files
 | Best For	| Read-heavy workloads, analytics, bulk updates	| Update-heavy workloads, streaming ingestion, incremental updates
 
-### Validate the HDFS Location
-### Background
+### Explore the Tables Storage Location
+
+The SHOW CREATE TABLE command that you ran above shows the Iceberg table's definition. Lets take a look at the storage location so that we can understand how Iceberg manages metadata and data. From the SHOW CREATE TABLE response from Jupyter copy the LOCATION path. In Jupyter, open a terminal window in Jupyter and run the following code, substituting the <location_url> with the locatioon you copied.
+
+```
+hdfs dfs -ls  <storage_location>
+```
+![alt text](../img/jupyter4.png)
+
+From the output you can see that the Iceberg table has a /metadata and /data subfolder structure.
+Now add /metadata onto the orevious command you ran in the terminsal to explore the metadata folder structure.
+```
+hdfs dfs -ls  <storage_location>/metadata
+```
+![alt text](../img/jupyter5.png)
+
+The /metadata directory contains snapshots, schema history, and manifest files, allowing Iceberg to manage partitioning and versioning without relying on Hive Metastore, while the /data directory holds the actual table data files.
+
 ### Understanding the Metadata Files
+
+#### Metadata JSON Files (*.metadata.json)
+  * **Example Files**: 00000-bc161db1-05f2-4d64-baab-69ca2070db33.metadata.json  
+  * **Purpose**: Stores table-level metadata such as schema, partitioning, snapshots, and file references. Each time the table structure changes (e.g., schema evolution, snapshot creation), a new metadata JSON file is generated. Older metadata files are retained to support time travel and rollback.
+  * **Data Type**: JSON format (human-readable, structured key-value pairs).
+* **Why?**: JSON allows Iceberg to store metadata in a flexible, easily accessible format. New versions can be created without modifying existing files, enabling schema evolution.
+
+#### Manifest List Files (*-m0.avro)
+  * **Example Files**: 3ecfea4f-9e06-45a9-bd7c-430fe4758283-m0.avro 
+  * **Purpose**: Stores a list of manifest files associated with a snapshot. Helps Iceberg quickly determine which data files belong to which snapshot without scanning the entire table.
+  * **Data Type**: Apache Avro format (binary, optimized for fast read/write).
+  * **Why**?: Avro is compact and supports schema evolution, making it ideal for metadata storage. Using Avro instead of JSON for large metadata speeds up querying and file tracking.
+
+#### Snapshot Files (snap-*-*.avro)
+  * Example Files: snap-1185275548636187694-1-f7f549e1-bd07-44da-b170-8973c2e6e3d6.avro  
+  * Purpose: Tracks table state at a specific point in time (snapshot ID, timestamp, manifest list, etc.). Allows for time travel and rollbacks to previous versions of the table.
+  * Data Type: Apache Avro format (binary, optimized for structured data storage).
+  * Why? Storing snapshots in Avro provides efficient serialization while keeping metadata compact and performant. Enables fast lookup of previous states for Iceberg’s time travel feature.
+
+#### How These Files Work Together in Iceberg:
+A **metadata** JSON file (.metadata.json) defines the table schema and references snapshots.
+A **snapshot** file (snap-*.avro) records changes and links to manifest lists.
+A **manifest list** file (*-m0.avro) references **manifest** files that contain details of individual data files.
+
+![alt text](../img/iceberg-metadata.png)
 
