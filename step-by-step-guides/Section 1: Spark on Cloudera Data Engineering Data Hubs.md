@@ -181,5 +181,5 @@ A **metadata** JSON file (.metadata.json) defines the table schema and reference
 A **snapshot** file (snap-*.avro) records changes and links to manifest lists.
 A **manifest list** file (*-m0.avro) references **manifest** files that contain details of individual data files.
 
-![alt text](../img/iceberg-metadata.png)
+![alt text](../img/iceberg-metadata-files.png)
 
