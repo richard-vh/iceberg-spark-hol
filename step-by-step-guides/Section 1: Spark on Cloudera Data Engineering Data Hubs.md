@@ -177,9 +177,9 @@ The /metadata directory contains snapshots, schema history, and manifest files, 
   * Why? Storing snapshots in Avro provides efficient serialization while keeping metadata compact and performant. Enables fast lookup of previous states for Iceberg’s time travel feature.
 
 #### How These Files Work Together in Iceberg:
-A **metadata** JSON file (.metadata.json) defines the table schema and references snapshots.
-A **snapshot** file (snap-*.avro) records changes and links to manifest lists.
-A **manifest list** file (*-m0.avro) references **manifest** files that contain details of individual data files.
+  * A **metadata** JSON file (.metadata.json) defines the table schema and references snapshots.
+  * A **snapshot** file (snap-*.avro) records changes and links to manifest lists.
+  * A **manifest list** file (*-m0.avro) references **manifest** files that contain details of individual data files.
 
 ![alt text](../img/iceberg-metadatafiles.png)
 
