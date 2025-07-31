@@ -1,7 +1,5 @@
 # Section 1: Spark on Cloudera Data Engineering Data Hubs
 
-Working with Spark on Cloudera Data Engineering Data Hubs
-
 Cloudera Data Hub is a cloud service for creating and managing secure, isolated, and elastic workload clusters on AWS, Azure, and GCP. It uses Cloudera Runtime and is managed from the Cloudera Management Console.
 
 The service provides pre-configured templates for common workloads but also allows for extensive customization through reusable resources like cluster definitions, templates, and scripts. This enables agile, on-demand cluster creation and automation via a web interface or CLI, with all clusters linked to a central Data Lake for security and governance.
@@ -183,3 +181,81 @@ The /metadata directory contains snapshots, schema history, and manifest files, 
 
 ![alt text](../img/iceberg-metadatafiles.png)
 
+
+## Lab 2. Iceberg data Manipulation 
+
+#### Best Practices for Managing Data
+  * Start with a comprehensive data model
+  * Ensure that the schema is well-defined and follows consistent naming conventions.
+  * Leverage nested structures for complex data
+  * Consider future analytics needs when defining partitions
+  * Avoid frequest schema and partition changes
+  * Monitor table performance as data grows, particularly with large updates.
+
+### Iceberg Data Inserts and Updates
+
+In Iceberg, you can insert and update data using SQL commands. Inserts add new records to the table, while updates modify existing records based on a condition.
+
+1. In your existing Jupyter notebook add a new cell and run the code below.
+```
+# Drop the table if it exists
+spark.sql("DROP TABLE IF EXISTS default.{}_english_football_teams".format(username))
+
+# Create the table for football teams in England
+spark.sql("""
+    CREATE TABLE default.{}_english_football_teams (
+        team_id STRING,
+        team_name STRING,
+        team_city STRING,
+        team_stadium STRING
+    )
+    USING iceberg
+""".format(username))
+
+# Insert data into the table
+spark.sql("""
+    INSERT INTO default.{}_english_football_teams 
+    VALUES 
+    ('T001', 'Manchester United', 'Manchester', 'Old Trafford'),
+    ('T002', 'Liverpool', 'Liverpool', 'Anfield'),
+    ('T003', 'Chelsea', 'London', 'Stamford Bridge')
+""".format(username))
+
+df = spark.sql("SELECT * FROM default.{}_english_football_teams".format(username))
+df.show(truncate=False)
+
+# Update data for a football team
+spark.sql("""
+    UPDATE default.{}_english_football_teams
+    SET team_stadium = 'New Stamford Bridge'
+    WHERE team_id = 'T003'
+""".format(username))
+
+df = spark.sql("SELECT * FROM default.{}_english_football_teams".format(username))
+df.show(truncate=False)
+```
+2. Look at the code and output and verify the inserts and update work as you would expect.
+
+### Iceberg Data Deletion
+
+When performing deletions in Iceberg, it’s important to remember that Iceberg uses a snapshot mechanism. Deletions will add a new snapshot but do not immediately remove data, ensuring that deleted data can still be recovered.
+
+#### What to Consider When Performing Deletions
+  * Deletions in Iceberg are versioned and can be reverted through time travel.
+  * Data is deleted based on conditions you specify (e.g., by team_id).
+  * You can perform data compaction after deletion for performance optimization.
+
+1. In your existing Jupyter notebook add a new cell and run the code below.
+```
+# Deleting data from the table (removing Chelsea)
+spark.sql("""
+    DELETE FROM default.{}_english_football_teams
+    WHERE team_id = 'T003'
+""".format(username))
+
+df = spark.sql("SELECT * FROM default.{}_english_football_teams".format(username))
+df.show(truncate=False)
+```
+2.  Look at the code and output and verify the delete works as you would expect.
+
+### Iceberg Tables Types (COW, MOR and MOW) 
