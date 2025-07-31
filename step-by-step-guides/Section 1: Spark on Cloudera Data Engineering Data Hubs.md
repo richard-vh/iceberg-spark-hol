@@ -158,7 +158,7 @@ The /metadata directory contains snapshots, schema history, and manifest files, 
 
 ### Understanding the Metadata Files
 
-#### Metadata JSON Files (*.metadata.json)
+#### Metadata Files (*.metadata.json)
   * **Example Files**: 00000-bc161db1-05f2-4d64-baab-69ca2070db33.metadata.json  
   * **Purpose**: Stores table-level metadata such as schema, partitioning, snapshots, and file references. Each time the table structure changes (e.g., schema evolution, snapshot creation), a new metadata JSON file is generated. Older metadata files are retained to support time travel and rollback.
   * **Data Type**: JSON format (human-readable, structured key-value pairs).
