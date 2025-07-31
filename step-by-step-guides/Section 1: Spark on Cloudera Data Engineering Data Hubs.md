@@ -1,14 +1,21 @@
-# Section 1: Spark on Cloudera Data Engineering Data Hubs
+# Section 1: Spark and Iceberg on Cloudera Data Engineering Data Hubs
+
+![alt text](../img/spark-iceberg-cldr.png)
 
 Cloudera Data Hub is a cloud service for creating and managing secure, isolated, and elastic workload clusters on AWS, Azure, and GCP. It uses Cloudera Runtime and is managed from the Cloudera Management Console.
 
 The service provides pre-configured templates for common workloads but also allows for extensive customization through reusable resources like cluster definitions, templates, and scripts. This enables agile, on-demand cluster creation and automation via a web interface or CLI, with all clusters linked to a central Data Lake for security and governance.
 
+## Before Starting the Labs
+
 Typically we would SSH onto the node and execute Spark commands via the command line, but for the purposes of this lab we will use JupyterLab notebooks installed on the Data Hub cluster Gateway node for a better lab experience.
+
+> [!TIP] 
+> If you prefer using the command line, you can SSH onto the public IP of a Data Hub node (using workload user name and password provided by the facilitator), follow the Labs and run the same code in a pyspark shell.
 
 Click on the following link to open JupyterLab on the Gateway node and log on using your workload user name and password provided by the facilitator i.e user001/hsgdguquuqyququ:
 
-```
+```ruby
 https://intelos-spark-hol-gateway2.se-sandb.a465-9q4k.cloudera.site:9443/
 ```
 
@@ -17,9 +24,9 @@ https://intelos-spark-hol-gateway2.se-sandb.a465-9q4k.cloudera.site:9443/
 
 ![alt text](../img/jupyter1.png)
 
-3. In the first cell of the new notebook paste the code below, substituting you assigned username in the username variable e.g. user003. This is going to create a Spark application on the Data Hub cluster.
+3. In the first cell of the new notebook paste the code below, substituting your assigned username in the username variable <userxxx> e.g. user003. This is going to create a Spark application on the Data Hub cluster for your user.
 
-```
+```ruby
 # Enter your assigned user below
 username = "<userxxx>"
 
@@ -73,7 +80,7 @@ Dropping the table deletes all data.
 **Note:** By default, when you create an Iceberg table, it will be a Copy-on-Write (COW) table. This means that when you modify data, a new version of the data is written, and old data is not overwritten. You can explicitly specify the table type as Copy-on-Write (COW) or Merge-on-Write (MOR) using table properties.
 
 1. For the remainder of this lab we'll do all of our Spark code in in your existing Jupyter notebook created above. Add a new cell to the notebook and run the code below.
-```
+```ruby
 spark.sql("DROP TABLE IF EXISTS default.{}_managed_countries".format(username))
 
 # Create an Iceberg table for European countries (COW by default)
@@ -98,13 +105,13 @@ spark.sql("""
 ![alt text](../img/jupyter3.png)
 
 2.Add a new cell to the notebook and run each code block below to query the table.
-```
+```ruby
 # Query the table
 df = spark.sql("SELECT * FROM default.{}_managed_countries".format(username))
 df.show()
 ```
 3.Add a new cell to the notebook and run each code block to look at the properties of the table.
-```
+```ruby
 # Describe the table
 spark.sql("DESCRIBE default.{}_managed_countries".format(username)).show()
 
@@ -121,33 +128,18 @@ The create table statement give us the the current table DDL, including the stor
 > [!NOTE] 
 > Iceberg v2 builds upon v1 by adding row-level updates and deletes, enabled through merge-on-read and delete files. This allows for more efficient modification of data within immutable file formats like Parquet, Avro, and ORC, without rewriting entire files. Iceberg v1 primarily focused on supporting large analytic tables with immutable file formats and snapshot-based isolation. _
 
-> [!NOTE] 
-> There are pros and cons to choosing which Iceberg Merge-On-Read or Copy-On-Write write mode to use. This table can help you decide which strategies to use for your Iceberg table.
-
-| **Feature** | **Copy-On-Write (COW)** | **Merge-On-Read (MOR)**
-| --- | --- | --- | 
-| Write Strategy | Rewrites entire affected files	| Creates separate delete/update files
-| Read Performance	| Fast, as data is fully compacted	| Slower, as delete files must be applied
-| Write Performance	| Slow, due to full file rewrites	| Faster, as only small delete/update files are written
-| Storage Impact	| Higher, due to frequent file rewrites	| Lower, as full files are not rewritten
-| Use Case Suitability	| Workloads with frequent reads and infrequent updates	| Workloads with frequent updates and fewer reads
-| Update Mechanism	| Full file rewrite on update	| Newly updated rows written separately, old data marked as deleted
-| Delete Mechanism	| Full file rewrite on delete	| Deletes tracked in separate delete files
-| Compaction Requirement	| Not required frequently	| Required periodically to merge delete files
-| Best For	| Read-heavy workloads, analytics, bulk updates	| Update-heavy workloads, streaming ingestion, incremental updates
-
 ### Explore the Tables Storage Location
 
 The SHOW CREATE TABLE command that you ran above shows the Iceberg table's definition. Lets take a look at the storage location so that we can understand how Iceberg manages metadata and data. From the SHOW CREATE TABLE response from Jupyter copy the LOCATION path. In Jupyter, open a terminal window in Jupyter and run the following code, substituting the <location_url> with the locatioon you copied.
 
-```
+```ruby
 hdfs dfs -ls  <storage_location>
 ```
 ![alt text](../img/jupyter4.png)
 
 From the output you can see that the Iceberg table has a /metadata and /data subfolder structure.
 Now add /metadata onto the orevious command you ran in the terminsal to explore the metadata folder structure.
-```
+```ruby
 hdfs dfs -ls  <storage_location>/metadata
 ```
 ![alt text](../img/jupyter5.png)
@@ -197,7 +189,7 @@ The /metadata directory contains snapshots, schema history, and manifest files, 
 In Iceberg, you can insert and update data using SQL commands. Inserts add new records to the table, while updates modify existing records based on a condition.
 
 1. In your existing Jupyter notebook add a new cell and run the code below.
-```
+```ruby
 # Drop the table if it exists
 spark.sql("DROP TABLE IF EXISTS default.{}_english_football_teams".format(username))
 
@@ -246,7 +238,7 @@ When performing deletions in Iceberg, it’s important to remember that Iceberg 
   * You can perform data compaction after deletion for performance optimization.
 
 1. In your existing Jupyter notebook add a new cell and run the code below.
-```
+```ruby
 # Deleting data from the table (removing Chelsea)
 spark.sql("""
     DELETE FROM default.{}_english_football_teams
@@ -258,13 +250,12 @@ df.show(truncate=False)
 ```
 2.  Look at the code and output and verify the delete works as you would expect.
 
-## Lab 3: Iceberg Tables Types (COW, MOR and MOW) 
+## Lab 3: Iceberg Tables Types (COW and MOR) 
 
 Iceberg tables support different storage strategies to balance performance, storage efficiency, and query speed. This section introduces the three primary approaches
 
   * **Copy-on-Write (COW)**: Ensures immutability by writing new files on every update, making it ideal for ACID transactions and historical auditing.
   * **Merge-on-Read (MOR)**: Optimizes write performance by storing changes as delta files, merging them at query time—useful for real-time ingestion.
-  * **Merge-on-Write (MOW)**: Merges updates directly into existing files, reducing storage overhead and improving efficiency for frequent updates.
     
 Each strategy has trade-offs, making them suitable for different workloads. The following sections provide details, comparisons, and implementation examples.
 
@@ -272,8 +263,7 @@ Each strategy has trade-offs, making them suitable for different workloads. The 
 
 **What is a Copy-on-Write Table?**: A Copy-on-Write (COW) table in Iceberg creates a new version of the data on each modification. The old data is not overwritten. Instead, a new version of the data is written to disk. This approach ensures that the data remains immutable, which makes it suitable for use cases that require strong consistency and atomicity.
 
-**How it differs to Merge-on-Write and Merge-on-Read:**
-  * Merge-on-Write: Modifications are immediately merged into the existing data files, whereas Copy-on-Write writes a new file and retains the old ones.
+**How it differs to Merge-on-Read:**
   * Merge-on-Read: Uses a merge operation when reading data, but doesn’t alter the underlying files, unlike Copy-on-Write, which rewrites the files with each update.
     
 **Key Use Cases:**
@@ -285,7 +275,7 @@ Each strategy has trade-offs, making them suitable for different workloads. The 
 
 In your existing Jupyter notebook add a new cell and run the code below and notice how the table properties change.
 
-```
+```ruby
 spark.sql("""
 	DROP TABLE IF EXISTS default.{}_cow_countries
 """.format(username))
@@ -314,9 +304,8 @@ spark.sql("SHOW TBLPROPERTIES default.{}_cow_countries".format(username)).show(t
 ### <ins>2. Iceberg Merge-on-Read (MOR) Table</ins>
 **What is a Merge-on-Read Table?**: Merge-on-Read (MOR) tables optimize write performance by storing changes as delta files instead of rewriting entire data files. These delta files are merged at query time, which reduces write latency but increases read complexity. This approach is particularly useful for real-time ingestion and event-driven applications, where updates occur frequently.
 
-**How it Differs from Copy-on-Write and Merge-on-Write**: 
+**How it Differs from Copy-on-Write**:
   * Copy-on-Write (COW): Writes a new file for each modification, ensuring immutability but increasing storage usage.
-  * Merge-on-Write (MOW): Directly modifies existing files, making updates more efficient while still requiring periodic cleanup.
     
 **Key Use Cases**:
   * Real-time ingestion of data where updates occur frequently.
@@ -327,7 +316,7 @@ spark.sql("SHOW TBLPROPERTIES default.{}_cow_countries".format(username)).show(t
 
 In your existing Jupyter notebook add a new cell and run the code below and notice how the table properties change. If you create an Iceberg v2 table in Cloudera the default is MOR.
 
-```
+```ruby
 spark.sql("""
 	DROP TABLE IF EXISTS default.{}_mor_countries
 """.format(username))
@@ -353,44 +342,18 @@ spark.sql("""
 spark.sql("SHOW TBLPROPERTIES default.{}_mor_countries".format(username)).show(truncate=False)
 ```
 
-### <ins>3. Iceberg Merge-on-Write (MOW) Table</ins>
-**What is a Merge-on-Write Table?**: Merge-on-Write (MOR) tables are similar to Copy-on-Write tables in that they support ACID transactions. However, in MOW tables, modifications are not written as new files. Instead, the changes are merged into existing files, reducing storage overhead. This makes it more efficient in scenarios where data updates are frequent, and keeping historical data is not necessary.
+> [!TIP] 
+> There are pros and cons to choosing which Iceberg write mode to use. This table can help you decide which strategies to use for your Iceberg table.
 
-**How it differs from Copy-on-Write and Merge-on-Read**: 
-  * Copy-on-Write: Writes new files for each modification, making it ideal for scenarios where immutability is important.
-  * Merge-on-Write: Merges updates into existing files, which makes it more storage-efficient but may lack some immutability guarantees.
-    
-**Key Use Cases**:
-  * Ideal when you need to store large datasets but want to avoid the overhead of rewriting full data files on every update.
-
-**Code Example:**
-
-In your existing Jupyter notebook add a new cell and run the code below and notice how the table properties change.
-
-```
-spark.sql("""
-	DROP TABLE IF EXISTS default.{}_mow_countries
-""".format(username))
-
-# Create an Iceberg Merge-on-Write table for European countries
-spark.sql("""
-    CREATE TABLE default.{}_mow_countries (
-        country_code STRING,
-        country_name STRING,
-        population INT,
-        area DOUBLE
-    )
-    USING iceberg
-    TBLPROPERTIES (
-        'write.format.default'='orc', 
-        'write.delete.mode'='merge-on-write',  -- Enable MOW for delete operations
-        'write.update.mode'='merge-on-write',  -- Enable MOW for update operations
-        'write.merge.mode'='merge-on-write'    -- Enable MOW for compaction
-    )
-""".format(username))
-
-# Show table properties to verify it's set for MOW
-spark.sql("SHOW TBLPROPERTIES default.{}_mow_countries".format(username)).show(truncate=False)
-```
-
+| **Feature** | **Copy-On-Write (COW)** | **Merge-On-Read (MOR)**
+| --- | --- | --- | 
+| Write Strategy | Rewrites entire affected files	| Creates separate delete/update files
+| Read Performance	| Fast, as data is fully compacted	| Slower, as delete files must be applied
+| Write Performance	| Slow, due to full file rewrites	| Faster, as only small delete/update files are written
+| Storage Impact	| Higher, due to frequent file rewrites	| Lower, as full files are not rewritten
+| Use Case Suitability	| Workloads with frequent reads and infrequent updates	| Workloads with frequent updates and fewer reads
+| Update Mechanism	| Full file rewrite on update	| Newly updated rows written separately, old data marked as deleted
+| Delete Mechanism	| Full file rewrite on delete	| Deletes tracked in separate delete files
+| Compaction Requirement	| Not required frequently	| Required periodically to merge delete files
+| Best For	| Read-heavy workloads, analytics, bulk updates	| Update-heavy workloads, streaming ingestion, incremental updates
 
