@@ -184,7 +184,7 @@ The /metadata directory contains snapshots, schema history, and manifest files, 
 
 ## Lab 2. Iceberg data Manipulation 
 
-#### Best Practices for Managing Data
+### Best Practices for Managing Data
   * Start with a comprehensive data model
   * Ensure that the schema is well-defined and follows consistent naming conventions.
   * Leverage nested structures for complex data
@@ -258,4 +258,139 @@ df.show(truncate=False)
 ```
 2.  Look at the code and output and verify the delete works as you would expect.
 
-### Iceberg Tables Types (COW, MOR and MOW) 
+## Lab 3: Iceberg Tables Types (COW, MOR and MOW) 
+
+Iceberg tables support different storage strategies to balance performance, storage efficiency, and query speed. This section introduces the three primary approaches
+
+  * **Copy-on-Write (COW)**: Ensures immutability by writing new files on every update, making it ideal for ACID transactions and historical auditing.
+  * **Merge-on-Read (MOR)**: Optimizes write performance by storing changes as delta files, merging them at query time—useful for real-time ingestion.
+  * **Merge-on-Write (MOW)**: Merges updates directly into existing files, reducing storage overhead and improving efficiency for frequent updates.
+    
+Each strategy has trade-offs, making them suitable for different workloads. The following sections provide details, comparisons, and implementation examples.
+
+### <ins>1. Iceberg Copy-on-Write (COW) Table</ins>
+
+**What is a Copy-on-Write Table?**: A Copy-on-Write (COW) table in Iceberg creates a new version of the data on each modification. The old data is not overwritten. Instead, a new version of the data is written to disk. This approach ensures that the data remains immutable, which makes it suitable for use cases that require strong consistency and atomicity.
+
+**How it differs to Merge-on-Write and Merge-on-Read:**
+  * Merge-on-Write: Modifications are immediately merged into the existing data files, whereas Copy-on-Write writes a new file and retains the old ones.
+  * Merge-on-Read: Uses a merge operation when reading data, but doesn’t alter the underlying files, unlike Copy-on-Write, which rewrites the files with each update.
+    
+**Key Use Cases:**
+  * Use Copy-on-Write when you need full ACID transaction support for your data.
+  * It’s ideal for batch jobs where the data doesn’t change frequently.
+  * Suitable for applications where old versions of the data may need to be retained for audit purposes.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below and notice how the table properties change.
+
+```
+spark.sql("""
+	DROP TABLE IF EXISTS default.{}_cow_countries
+""".format(username))
+
+# Create an Iceberg Copy-on-Write table for European countries
+spark.sql("""
+    CREATE TABLE default.{}_cow_countries (
+        country_code STRING,
+        country_name STRING,
+        population INT,
+        area DOUBLE
+    )
+    USING iceberg
+    TBLPROPERTIES (
+        'write.format.default'='orc', 
+        'write.delete.mode'='copy-on-write',  -- Enable COW for delete operations
+        'write.update.mode'='copy-on-write',  -- Enable COW for update operations
+        'write.merge.mode'='copy-on-write'    -- Enable COW for compaction
+    )
+""".format(username))
+
+# Show table properties to verify it's set for COW
+spark.sql("SHOW TBLPROPERTIES default.{}_cow_countries".format(username)).show(truncate=False)
+```
+
+### <ins>2. Iceberg Merge-on-Read (MOR) Table</ins>
+**What is a Merge-on-Read Table?**: Merge-on-Read (MOR) tables optimize write performance by storing changes as delta files instead of rewriting entire data files. These delta files are merged at query time, which reduces write latency but increases read complexity. This approach is particularly useful for real-time ingestion and event-driven applications, where updates occur frequently.
+
+**How it Differs from Copy-on-Write and Merge-on-Write**: 
+  * Copy-on-Write (COW): Writes a new file for each modification, ensuring immutability but increasing storage usage.
+  * Merge-on-Write (MOW): Directly modifies existing files, making updates more efficient while still requiring periodic cleanup.
+    
+**Key Use Cases**:
+  * Real-time ingestion of data where updates occur frequently.
+  * Event-driven architectures where append operations dominate.
+  * Optimized for streaming workloads, reducing write latency while maintaining historical changes.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below and notice how the table properties change. If you create an Iceberg v2 table in Cloudera the default is MOR.
+
+```
+spark.sql("""
+	DROP TABLE IF EXISTS default.{}_mor_countries
+""".format(username))
+
+# Create an Iceberg Merge-on-Read table for European countries
+spark.sql("""
+    CREATE TABLE default.{}_mor_countries (
+        country_code STRING,
+        country_name STRING,
+        population INT,
+        area DOUBLE
+    )
+    USING iceberg
+    TBLPROPERTIES (
+        'write.format.default'='orc', 
+        'write.delete.mode'='merge-on-read',  -- Enable MOR for delete operations
+        'write.update.mode'='merge-on-read',  -- Enable MOR for update operations
+        'write.merge.mode'='merge-on-read'    -- Enable MOR for compaction
+    )
+""".format(username))
+
+# Show table properties to verify it's set for MOR
+spark.sql("SHOW TBLPROPERTIES default.{}_mor_countries".format(username)).show(truncate=False)
+```
+
+### <ins>3. Iceberg Merge-on-Write (MOW) Table</ins>
+**What is a Merge-on-Write Table?**: Merge-on-Write (MOR) tables are similar to Copy-on-Write tables in that they support ACID transactions. However, in MOW tables, modifications are not written as new files. Instead, the changes are merged into existing files, reducing storage overhead. This makes it more efficient in scenarios where data updates are frequent, and keeping historical data is not necessary.
+
+**How it differs from Copy-on-Write and Merge-on-Read**: 
+  * Copy-on-Write: Writes new files for each modification, making it ideal for scenarios where immutability is important.
+  * Merge-on-Write: Merges updates into existing files, which makes it more storage-efficient but may lack some immutability guarantees.
+    
+**Key Use Cases**:
+  * Ideal when you need to store large datasets but want to avoid the overhead of rewriting full data files on every update.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below and notice how the table properties change.
+
+```
+spark.sql("""
+	DROP TABLE IF EXISTS default.{}_mow_countries
+""".format(username))
+
+# Create an Iceberg Merge-on-Write table for European countries
+spark.sql("""
+    CREATE TABLE default.{}_mow_countries (
+        country_code STRING,
+        country_name STRING,
+        population INT,
+        area DOUBLE
+    )
+    USING iceberg
+    TBLPROPERTIES (
+        'write.format.default'='orc', 
+        'write.delete.mode'='merge-on-write',  -- Enable MOW for delete operations
+        'write.update.mode'='merge-on-write',  -- Enable MOW for update operations
+        'write.merge.mode'='merge-on-write'    -- Enable MOW for compaction
+    )
+""".format(username))
+
+# Show table properties to verify it's set for MOW
+spark.sql("SHOW TBLPROPERTIES default.{}_mow_countries".format(username)).show(truncate=False)
+```
+
+
