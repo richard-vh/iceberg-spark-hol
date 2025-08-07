@@ -345,15 +345,167 @@ spark.sql("SHOW TBLPROPERTIES default.{}_mor_countries".format(username)).show(t
 > [!TIP] 
 > There are pros and cons to choosing which Iceberg write mode to use. This table can help you decide which strategies to use for your Iceberg table.
 
-| **Feature** | **Copy-On-Write (COW)** | **Merge-On-Read (MOR)**
-| --- | --- | --- | 
-| Write Strategy | Rewrites entire affected files	| Creates separate delete/update files
-| Read Performance	| Fast, as data is fully compacted	| Slower, as delete files must be applied
-| Write Performance	| Slow, due to full file rewrites	| Faster, as only small delete/update files are written
-| Storage Impact	| Higher, due to frequent file rewrites	| Lower, as full files are not rewritten
-| Use Case Suitability	| Workloads with frequent reads and infrequent updates	| Workloads with frequent updates and fewer reads
-| Update Mechanism	| Full file rewrite on update	| Newly updated rows written separately, old data marked as deleted
-| Delete Mechanism	| Full file rewrite on delete	| Deletes tracked in separate delete files
-| Compaction Requirement	| Not required frequently	| Required periodically to merge delete files
-| Best For	| Read-heavy workloads, analytics, bulk updates	| Update-heavy workloads, streaming ingestion, incremental updates
+**Merge-On-Read (MOR)**
+ * Writes are efficient.
+ * Reads are inefficient due to read amplification, but regularly scheduled compaction can reduce inefficiency.
+ * A good choice when streaming.
+ * A good choice when frequently writing or updating, such as running hourly batch jobs.
+ * A good choice when the percentage of data change is low.
 
+**Copy-On-Write (COW)**
+ * Reads are efficient.
+ * A good choice for bulk updates and deletes, such as running a daily batch job.
+ * Writes are inefficient due to write amplification, but the need for compaction is reduced.
+ * A good choice when the percentage of data change is high.
+
+## Lab 4: Schema and Partition Evolution
+
+### Iceberg Schema Evolution
+Schema evolution in Iceberg allows you to modify the structure of your tables over time. This includes adding, renaming, and removing columns while ensuring that historical data remains accessible without requiring a full rewrite of the table.
+
+**Iceberg supports schema evolution operations like:**
+ * Adding columns: You can add new columns without affecting the existing data or operations.
+ * Renaming columns: The renaming of columns is supported without requiring data migration.
+ * Changing column types: You can change the type of a column, as long as it is compatible with the existing data.
+ * Dropping columns: Columns can be safely dropped if they are no longer needed.
+
+**Why is Schema Evolution important?**
+ * Adapting to business needs: As your data requirements evolve, schema changes are often necessary without disrupting production workflows.
+ * Backwards compatibility: Allows for schema changes that are compatible with existing data, meaning that you can evolve the schema without breaking old queries or affecting historical data.
+ * Simplifying data management: Allows incremental changes to the schema without needing full table rewrites.
+
+**Considerations and Caveats for Schema Evolution**
+ * Compatibility: Ensure that new schema changes are compatible with existing data. Some operations, such as changing a column's type, require careful consideration.
+ * Versioning: Iceberg maintains a versioned history of schema changes, which allows you to track and revert changes if needed. However, large schema modifications across many partitions may require additional resources for processing.
+ * Impact on performance: While Iceberg provides schema evolution capabilities, unnecessary schema changes (such as renaming or adding many columns) could lead to performance degradation in some cases.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how the table's schema definition is changed by adding a new column and renaming an existing one without affecting existing data or having to migrate the data.
+
+```ruby
+spark.sql("""
+	DROP TABLE IF EXISTS default.{}_zoo_animals_schema_evo
+""".format(username))
+
+# Create the initial Iceberg table
+spark.sql("""
+    CREATE TABLE default.{}_zoo_animals_schema_evo (
+        animal_id STRING,
+        animal_name STRING
+    )
+    USING iceberg TBLPROPERTIES ('format-version' = '2')
+""".format(username))
+
+# Insert sample data
+spark.sql("""
+    INSERT INTO default.{}_zoo_animals_schema_evo VALUES 
+    ('A001', 'Lion'),
+    ('A002', 'Elephant'),
+    ('A003', 'Giraffe')
+""".format(username))
+
+# View the Data
+df = spark.sql("select * from default.{}_zoo_animals_schema_evo".format(username))
+df.show(truncate=False)
+
+# View the schema
+df = spark.sql("DESCRIBE TABLE default.{}_zoo_animals_schema_evo".format(username))
+df.show(truncate=False)
+
+# Add a new column to the table
+spark.sql("""
+    ALTER TABLE default.{}_zoo_animals_schema_evo ADD COLUMN habitat STRING
+""".format(username))
+
+# Rename an existing column
+spark.sql("""
+    ALTER TABLE default.{}_zoo_animals_schema_evo RENAME COLUMN animal_name TO species_name
+""".format(username))
+
+# Insert new data into the updated schema
+spark.sql("""
+    INSERT INTO default.{}_zoo_animals_schema_evo VALUES 
+    ('A004', 'Zebra', 'Savanna'),
+    ('A005', 'Panda', 'Bamboo Forest')
+""".format(username))
+
+# View the Data
+df = spark.sql("select * from default.{}_zoo_animals_schema_evo".format(username))
+df.show(truncate=False)
+
+# View the schema
+df = spark.sql("DESCRIBE TABLE default.{}_zoo_animals_schema_evo".format(username))
+df.show(truncate=False)
+
+# View the create table
+df = spark.sql("SHOW CREATE TABLE default.{}_zoo_animals_schema_evo".format(username))
+df.show(truncate=False)
+```
+### Iceberg Partition Evolution
+
+**What is Partition Evolution?**
+Partition evolution refers to the ability to modify the partitioning strategy of an Iceberg table after it has been created. This can involve changing the partitioning key (column used for partitioning) or adding new partitioning columns. Unlike traditional partitioning schemes, Iceberg allows for flexible partition evolution without needing to rewrite the entire dataset. Partitioning evolution can help optimize query performance and manage large datasets more efficiently.
+
+**Common Partitioning Strategies **
+ * Time-based partitioning: Commonly used for time-series data, partitioning by date or timestamp can help in partition pruning, making queries faster.
+ * Range or hash partitioning: For datasets with discrete values like animal species, partitioning by a range of values or using hash partitioning can help balance the data across partitions.
+
+You can change the partitioning strategy after the table has been created, even if the data already exists. This allows you to optimize partitioning as your query patterns evolve and take advantage of query optimization with regards to partition pruning as the data evolves and grows within the table.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how the table's patition strategy evolves.
+
+```ruby
+spark.sql("""
+	DROP TABLE IF EXISTS default.{}_zoo_animals_partition_evo
+""".format(username))
+
+# Create the initial Iceberg table partitioned by 'animal_id'
+spark.sql("""
+    CREATE TABLE default.{}_zoo_animals_partition_evo (
+        animal_id STRING,
+        species_name STRING,
+        habitat STRING
+    )
+    USING iceberg TBLPROPERTIES ('format-version' = '2')
+    PARTITIONED BY (animal_id)
+""".format(username))
+
+# Insert data into the initial partitioning scheme
+spark.sql("""
+    INSERT INTO default.{}_zoo_animals_partition_evo VALUES
+    ('A001', 'Lion', 'Savanna'),
+    ('A002', 'Tiger', 'Forest')
+""".format(username))
+
+# Show the formatted schema and partitioning scheme before change
+spark.sql("DESCRIBE FORMATTED default.{}_zoo_animals_partition_evo".format(username)).show(truncate=False)
+
+# Change the partitioning scheme to partition by both 'animal_id' and 'habitat'
+spark.sql("""ALTER TABLE default.{}_zoo_animals_partition_evo ADD PARTITION FIELD habitat""".format(username))
+
+# Insert data after the partitioning scheme change
+spark.sql("""
+    INSERT INTO default.{}_zoo_animals_partition_evo VALUES
+    ('A003', 'Elephant', 'Grassland'),
+    ('A004', 'Panda', 'Mountain')
+""".format(username))
+
+# Show the formatted schema and partitioning scheme after the change
+spark.sql("DESCRIBE FORMATTED default.{}_zoo_animals_partition_evo".format(username)).show(truncate=False)
+
+# Querying data
+spark.sql("""
+    SELECT * FROM default.{}_zoo_animals_partition_evo
+""".format(username)).show()
+
+# QUERY THE METADATA TABLE TO LIST PARTITIONS - NOTE YOUR OLDER DATA IS NOT PARTITIONED ON "habitat"
+df = spark.sql("SELECT DISTINCT partition FROM default.{}_zoo_animals_partition_evo.files".format(username))
+df.show(truncate=False)
+
+# If you want to gather more detailed partition-level information
+df = spark.sql("SELECT * FROM default.{}_zoo_animals_partition_evo.files".format(username))
+df.show(truncate=False)
+```
