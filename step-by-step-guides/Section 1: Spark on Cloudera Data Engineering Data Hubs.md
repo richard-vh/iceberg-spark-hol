@@ -509,3 +509,175 @@ df.show(truncate=False)
 df = spark.sql("SELECT * FROM default.{}_zoo_animals_partition_evo.files".format(username))
 df.show(truncate=False)
 ```
+
+## Lab 4: Iceberg Time Travel & Rollbacks using Snapshots
+
+### Understanding Time Travel in Iceberg
+
+**What is Time Travel in Iceberg?**
+Time travel in Iceberg allows you to query a table as it existed at a specific point in time in the past. This feature leverages Iceberg's snapshot-based architecture to track all changes made to the data over time. When you perform time travel, Iceberg will provide data based on the state of the table at a specified snapshot or timestamp.
+Time travel is supported by specifying a timestamp or snapshot ID when querying the table, which enables access to historical data without having to maintain separate copies of the data.
+
+**How Time Travel enhances data management**
+Historical queries: Time travel enables you to perform analysis on data as it existed at any previous time. This is valuable for auditing, debugging, and investigating historical trends.
+Data recovery: In case of accidental data loss or corruption, you can use time travel to recover previous versions of data.
+Simplifying rollbacks: Instead of reloading or restoring data from backups, you can simply query an earlier snapshot, reducing the complexity of data restoration.
+
+**Key use cases and limitations**
+ * Key use cases:
+	* Auditing: Access historical data to verify what changes were made over time.
+	* Data consistency: Ensure that queries are consistent with data at specific points in time, even in dynamic environments.
+	* Bug investigation: Time travel is useful when tracking data issues or discrepancies in reports over time.
+ * Limitations:
+	* Snapshot retention: Older snapshots can be pruned to optimize storage, which may impact time travel for long periods in the past.
+	* Performance: Querying historical data may take longer depending on the size and number of snapshots involved.
+	* Storage costs: Maintaining historical snapshots may increase storage costs.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how DML operations create snapshots and how we can use these snapshots to do time travel.
+
+```ruby
+spark.sql("""
+	DROP TABLE IF EXISTS default.{}_european_cars_time_travel
+""".format(username))
+
+# Create an Iceberg table for European cars
+spark.sql("""
+    CREATE TABLE default.{}_european_cars_time_travel (
+        car_id STRING,
+        car_make STRING,
+        car_model STRING,
+        car_country STRING
+    )
+    USING iceberg
+""".format(username))
+
+# Insert initial data
+spark.sql("""
+    INSERT INTO default.{}_european_cars_time_travel VALUES 
+    ('C001', 'Volkswagen', 'Golf', 'Germany'),
+    ('C002', 'BMW', 'X5', 'Germany')
+""".format(username))
+
+# List the available snapshots of the table
+snapshots_df = spark.sql("""
+    SELECT * FROM default.{}_european_cars_time_travel.snapshots
+""".format(username))
+snapshots_df.show()
+
+# Perform an update operation to modify the data 
+spark.sql("""
+    UPDATE default.{}_european_cars_time_travel SET car_model = 'Polo' WHERE car_id = 'C001'
+""".format(username))
+
+snapshots_df = spark.sql("""
+    SELECT * FROM default.{}_european_cars_time_travel.snapshots
+""".format(username))
+snapshots_df.show()
+
+# Insert new car data (Look, it's not a European Car)
+spark.sql("""
+    INSERT INTO default.{}_european_cars_time_travel VALUES 
+    ('C003', 'FORD', 'F150', 'USA')
+""".format(username))
+
+snapshots_df = spark.sql("""
+    SELECT * FROM default.{}_european_cars_time_travel.snapshots
+""".format(username))
+snapshots_df.show()
+
+# We now have incorrect data in the table
+df = spark.sql("SELECT * FROM default.{}_european_cars_time_travel".format(username))
+df.show(truncate=False)
+
+# Perform Time Travel to see the table before the insert
+# Fetch the snapshot ID from the snapshot listing
+rollback_snapshot_id_1 = snapshots_df.collect()[1].snapshot_id  
+print(rollback_snapshot_id_1)
+
+# Travel back to when the USA Cars weren't present in the table
+df_time_travel = spark.sql("""
+    SELECT * FROM default.{0}_european_cars_time_travel VERSION AS OF {1}
+""".format(username,rollback_snapshot_id_1))
+df_time_travel.show()
+
+# Perform Time Travel to see the table before the edit
+# Fetch the snapshot ID from the snapshot listing
+rollback_snapshot_id_0 = snapshots_df.collect()[0].snapshot_id  
+print(rollback_snapshot_id_0)
+
+# Travel back to before we edited the table
+df_time_travel = spark.sql("""
+    SELECT * FROM default.{0}_european_cars_time_travel VERSION AS OF {1}
+""".format(username,rollback_snapshot_id_0))
+df_time_travel.show()
+```
+
+### Rollback Using Snapshots
+
+**What is Rollback in Iceberg?**
+Rollback in Iceberg allows you to revert the table's state to a specific snapshot, undoing any subsequent changes. This is useful in scenarios where data corruption, accidental deletion, or unwanted changes occur. By rolling back to a previous snapshot, you can restore the table to its desired state.
+
+**Key Points on Rollback:**
+ * Rollback to a Snapshot: You can roll back the table by specifying a snapshot ID that corresponds to the point in time you wish to revert to.
+ * How it works: The rollback operation rewrites the table to the state of the specified snapshot, effectively "reverting" any changes made after that snapshot.
+ * Usage: Rollback can be useful in production environments where you need to ensure data integrity and recover from accidental modifications.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how DML operations create snapshots and how we can use these snapshots to do table rollbacks.
+
+```ruby
+# Drop the table if it exists
+spark.sql("DROP TABLE IF EXISTS default.{}_european_cars_rollback".format(username))
+
+# Create an Iceberg table for European cars
+spark.sql("""
+    CREATE TABLE default.{}_european_cars_rollback (
+        car_id STRING,
+        car_make STRING,
+        car_model STRING,
+        car_country STRING
+    )
+    USING iceberg
+""".format(username))
+
+# Insert initial data
+spark.sql("""
+    INSERT INTO default.{}_european_cars_rollback VALUES 
+    ('C001', 'Volkswagen', 'Golf', 'Germany'),
+    ('C002', 'BMW', 'X5', 'Germany')
+""".format(username))
+
+# Perform an update operation to modify the data 
+spark.sql("""
+    UPDATE default.{}_european_cars_rollback SET car_model = 'Polo' WHERE car_id = 'C001'
+""".format(username))
+
+# Insert new car data (Look, it's not a European Car)
+spark.sql("""
+    INSERT INTO default.{}_european_cars_rollback VALUES 
+    ('C003', 'FORD', 'F150', 'USA')
+""".format(username))
+
+# Show the updated table data
+df = spark.sql("SELECT * FROM default.{}_european_cars_rollback".format(username))
+df.show(truncate=False)
+
+# List the available snapshots of the table
+snapshots_df = spark.sql("""
+    SELECT * FROM default.{}_european_cars_rollback.snapshots
+""".format(username))
+snapshots_df.show()
+
+# Rollback to the initial table state (before the USA Cars and Edits)
+first_snapshot = snapshots_df.collect()[0].snapshot_id  
+
+# Call the Roll Back Command
+spark.sql("CALL spark_catalog.system.rollback_to_snapshot('default.{0}_european_cars_rollback', {1})".format(username,first_snapshot)).show()
+
+# Show the table data after rollback
+df = spark.sql("SELECT * FROM default.{}_european_cars_rollback".format(username))
+df.show(truncate=False)
+```
