@@ -510,7 +510,7 @@ df = spark.sql("SELECT * FROM default.{}_zoo_animals_partition_evo.files".format
 df.show(truncate=False)
 ```
 
-## Lab 4: Iceberg Time Travel & Rollbacks using Snapshots
+## Lab 5: Iceberg Time Travel & Rollbacks using Snapshots
 
 ### Understanding Time Travel in Iceberg
 
@@ -614,7 +614,7 @@ df_time_travel = spark.sql("""
 df_time_travel.show()
 ```
 
-### Rollback Using Snapshots
+### Rollback Tables Using Snapshots
 
 **What is Rollback in Iceberg?**
 Rollback in Iceberg allows you to revert the table's state to a specific snapshot, undoing any subsequent changes. This is useful in scenarios where data corruption, accidental deletion, or unwanted changes occur. By rolling back to a previous snapshot, you can restore the table to its desired state.
@@ -680,4 +680,41 @@ spark.sql("CALL spark_catalog.system.rollback_to_snapshot('default.{0}_european_
 # Show the table data after rollback
 df = spark.sql("SELECT * FROM default.{}_european_cars_rollback".format(username))
 df.show(truncate=False)
+```
+
+## Lab 6: Iceberg Tagging, Branching and Merging
+
+### Creating Branches in Iceberg
+
+**What is branching in Iceberg?**
+Branching in Iceberg is the ability to create isolated environments to work with the data. These branches allow you to perform operations such as inserting, updating, or deleting data without affecting the main production data. Branching in Iceberg helps in creating versions of the data for testing, experimentation, or new features, and once the branch is ready, it can be merged back into the main branch.
+
+**Why and when to use branches?**
+ * Testing new features (e.g., testing new health metrics without affecting the existing production data).
+ * Running experiments or simulations.
+ * Isolating changes until they are confirmed to be stable and ready to be merged.
+ * Collaborating with different teams on separate data versions before consolidating the changes.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how DML operations create snapshots and how we can use these snapshots to do table rollbacks.
+
+```ruby
+```
+
+### Merging Iceberg Branches
+
+**What does it mean to merge branches in Iceberg?**
+Merging branches in Iceberg means consolidating the changes made in a branch into the main branch. This allows updates, experiments, or testing to be brought into the mainline data once they are confirmed to be stable or necessary.
+
+**How merging works in Iceberg**
+ * You can merge changes from a branch back into the main dataset.
+ * The merge operation only applies changes from the branch and doesn't affect the main branch unless there are new or modified records that need to be merged.
+ * Iceberg provides methods to merge only certain changes from a branch or completely merge all data between branches.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how DML operations create snapshots and how we can use these snapshots to do table rollbacks.
+
+```ruby
 ```
