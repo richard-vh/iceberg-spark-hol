@@ -887,4 +887,31 @@ spark.sql("select * from default.{}_healthcare_patient_data".format(username)).s
 
 # Drop the branch after the merge if no longer needed
 spark.sql("ALTER TABLE default.{}_healthcare_patient_data DROP BRANCH testing_branch".format(username))
+
+## Lab 7: Migrating tables from Hive to Iceberg
+
+### “CONVERT” In-Place Migration Vanilla Parquet to Iceberg
+
+**Background**
+In-place migration from Parquet to Iceberg allows seamless conversion without moving data or creating a new table.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how isolated data created branches can be merged back into the main branch of Iceberg tables.
+
+```ruby
+
+```
+
+### “Create Table As” (CATS) Migration from Vanilla Parquet to Iceberg
+
+**Background**
+When migrating from Hive to Iceberg, one of the common approaches is to use the CREATE TABLE AS (CTAS) statement. This method allows you to create a new Iceberg table and populate it with data from an existing Hive table in one step.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how isolated data created branches can be merged back into the main branch of Iceberg tables.
+
+```ruby
+
 ```
