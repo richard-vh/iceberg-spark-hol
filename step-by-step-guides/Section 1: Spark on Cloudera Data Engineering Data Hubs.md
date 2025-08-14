@@ -1033,7 +1033,7 @@ Iceberg maintains a history of table snapshots, allowing for time travel and rol
  * Irreversible Data Loss: Once expired, snapshots cannot be restored, so retention policies must be carefully set.
  * Cleans Up Old Manifest Files: Expiring snapshots removes outdated manifest files, keeping metadata management efficient.
 
-**Code Example:**
+### Code Example: Compaction and Expiring Snapshots
 
 In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how small files can be compacted and how historic snapshots can be expired
 
