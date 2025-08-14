@@ -893,7 +893,10 @@ spark.sql("ALTER TABLE default.{}_healthcare_patient_data DROP BRANCH testing_br
 
 ### “CONVERT” In-Place Migration Vanilla Parquet to Iceberg
 
+![alt text](../img/icebergmigrate.png)
+
 **Background**
+
 In-place migration from Parquet to Iceberg allows seamless conversion without moving data or creating a new table.
 
 **Code Example:**
@@ -939,6 +942,7 @@ spark.sql("DESCRIBE FORMATTED default.{}_cloudera_parquet".format(username)).sho
 ### “Create Table As” (CATS) Migration from Vanilla Parquet to Iceberg
 
 **Background**
+
 When migrating from Hive to Iceberg, one of the common approaches is to use the CREATE TABLE AS (CTAS) statement. This method allows you to create a new Iceberg table and populate it with data from an existing Hive table in one step.
 
 **Code Example:**
