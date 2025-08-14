@@ -888,6 +888,8 @@ spark.sql("select * from default.{}_healthcare_patient_data".format(username)).s
 # Drop the branch after the merge if no longer needed
 spark.sql("ALTER TABLE default.{}_healthcare_patient_data DROP BRANCH testing_branch".format(username))
 
+
+
 ## Lab 7: Migrating tables from Hive to Iceberg
 
 ### “CONVERT” In-Place Migration Vanilla Parquet to Iceberg
