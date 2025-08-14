@@ -887,8 +887,7 @@ spark.sql("select * from default.{}_healthcare_patient_data".format(username)).s
 
 # Drop the branch after the merge if no longer needed
 spark.sql("ALTER TABLE default.{}_healthcare_patient_data DROP BRANCH testing_branch".format(username))
-
-
+```
 
 ## Lab 7: Migrating tables from Hive to Iceberg
 
@@ -899,10 +898,42 @@ In-place migration from Parquet to Iceberg allows seamless conversion without mo
 
 **Code Example:**
 
-In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how isolated data created branches can be merged back into the main branch of Iceberg tables.
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how a Hive table is migratred in-place to an Iceberg table.
+
+> [!TIP] 
+> Using an in-place table migration is the fastest most efficient way to convert tables to Iceberg tables as just the metadata is rewritten, not the data files.
 
 ```ruby
+# Create a regular Parquet table with sample data
+spark.sql("""
+    CREATE TABLE default.{}_cloudera_parquet (
+        cloudera_employee STRING,
+        cloudera_role STRING
+    )
+    USING PARQUET
+""".format(username))
 
+# Insert records into the Parquet table
+spark.sql("""
+    INSERT INTO default.{}_cloudera_parquet VALUES
+    ('Joe Cur', 'SE'),
+    ('Jane Pas', 'PS')
+""".format(username))
+
+# Display the contents of the Parquet table
+spark.sql("SELECT * FROM default.{}_cloudera_parquet".format(username)).show()
+
+# Describe the Parquet table before migration
+spark.sql("DESCRIBE FORMATTED default.{}_cloudera_parquet".format(username)).show()
+
+# Perform in-place migration from Parquet to Iceberg
+spark.sql("CALL system.migrate('default.{}_cloudera_parquet')".format(username))
+
+# Verify the migration by querying the table again
+spark.sql("SELECT * FROM default.{}_cloudera_parquet".format(username)).show()
+
+# Describe the table after migration to confirm Iceberg format
+spark.sql("DESCRIBE FORMATTED default.{}_cloudera_parquet".format(username)).show()
 ```
 
 ### “Create Table As” (CATS) Migration from Vanilla Parquet to Iceberg
@@ -915,5 +946,44 @@ When migrating from Hive to Iceberg, one of the common approaches is to use the 
 In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how isolated data created branches can be merged back into the main branch of Iceberg tables.
 
 ```ruby
+# Drop existing tables if they exist
+spark.sql("DROP TABLE IF EXISTS default.{}_ctas_cloudera_parquet".format(username))
+spark.sql("DROP TABLE IF EXISTS default.{}_ctas_cloudera_iceberg".format(username))
 
+# Create a Parquet table
+spark.sql("""
+    CREATE TABLE default.{}_ctas_cloudera_parquet (
+        cloudera_employee STRING,
+        cloudera_role STRING
+    )
+    USING PARQUET
+""".format(username))
+
+# Insert sample data into the Parquet table
+spark.sql("""
+    INSERT INTO default.{}_ctas_cloudera_parquet VALUES
+    ('Joe Cur', 'SE'),
+    ('Jane Pas', 'PS')
+""".format(username))
+
+# Display the contents of the Parquet table
+spark.sql("SELECT * FROM default.{}_ctas_cloudera_parquet".format(username)).show()
+
+# Describe the Parquet table structure
+spark.sql("DESCRIBE FORMATTED default.{}_ctas_cloudera_parquet".format(username)).show()
+
+# Create an Iceberg table from the Parquet table
+spark.sql("""
+    CREATE TABLE default.{}_ctas_cloudera_iceberg 
+    USING iceberg 
+    AS SELECT * FROM default.{}_ctas_cloudera_parquet
+""".format(username,username))
+
+# Display the contents of the Iceberg table
+spark.sql("SELECT * FROM default.{}_ctas_cloudera_iceberg".format(username)).show()
+
+# Describe the Iceberg table structure
+spark.sql("DESCRIBE FORMATTED default.{}_ctas_cloudera_iceberg".format(username)).show()
 ```
+
+
