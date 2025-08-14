@@ -360,6 +360,8 @@ spark.sql("SHOW TBLPROPERTIES default.{}_mor_countries".format(username)).show(t
 
 ## Lab 4: Schema and Partition Evolution
 
+![alt text](../img/icebergevolution.png)
+
 ### Iceberg Schema Evolution
 Schema evolution in Iceberg allows you to modify the structure of your tables over time. This includes adding, renaming, and removing columns while ensuring that historical data remains accessible without requiring a full rewrite of the table.
 
