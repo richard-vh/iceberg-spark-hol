@@ -682,7 +682,7 @@ df = spark.sql("SELECT * FROM default.{}_european_cars_rollback".format(username
 df.show(truncate=False)
 ```
 
-## Lab 6: Iceberg Tagging, Branching and Merging
+## Lab 6: Iceberg Branching and Merging
 
 ### Creating Branches in Iceberg
 
@@ -697,9 +697,46 @@ Branching in Iceberg is the ability to create isolated environments to work with
 
 **Code Example:**
 
-In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how DML operations create snapshots and how we can use these snapshots to do table rollbacks.
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how branches are created in Iceberg tables and how branch data can be isolated from the main table data.
 
 ```ruby
+# Drop the table if it exists, so we can rerun the code
+spark.sql("DROP TABLE IF EXISTS default.{}_healthcare_patient_data".format(username))
+
+# Create an Iceberg table for healthcare patient data
+spark.sql("""
+    CREATE TABLE default.{}_healthcare_patient_data (
+        patient_id STRING,
+        patient_name STRING,
+        age INT,
+        diagnosis STRING,
+        treatment STRING,
+        doctor STRING
+    )
+    USING iceberg
+""".format(username))
+
+# Insert initial patient data into the base table (CREATES A SNAPSHOT)
+spark.sql("""
+    INSERT INTO default.{}_healthcare_patient_data VALUES 
+    ('P001', 'John Doe', 45, 'Hypertension', 'Beta-blockers', 'Dr. Smith'),
+    ('P002', 'Jane Roe', 50, 'Diabetes', 'Insulin', 'Dr. Johnson')
+""".format(username))
+
+# CREATE A BRANCH 
+spark.sql("ALTER TABLE default.{}_healthcare_patient_data CREATE BRANCH testing_branch".format(username))
+
+# Insert initial patient data into the base table (CREATES A SNAPSHOT)
+spark.sql("""
+    INSERT INTO default.{}_healthcare_patient_data.branch_testing_branch VALUES 
+    ('P999', 'Richard V', 99, 'Headache', 'Time', 'Dr. Jeff')
+""".format(username))
+
+# Branch should contain the new data
+spark.sql("select * from default.{}_healthcare_patient_data.branch_testing_branch".format(username)).show()
+
+# Main table is untouched 
+spark.sql("select * from default.{}_healthcare_patient_data".format(username)).show()
 ```
 
 ### Merging Iceberg Branches
@@ -717,4 +754,68 @@ Merging branches in Iceberg means consolidating the changes made in a branch int
 In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how DML operations create snapshots and how we can use these snapshots to do table rollbacks.
 
 ```ruby
+# Drop the table if it exists, so we can rerun the code
+spark.sql("DROP TABLE IF EXISTS default.{}_healthcare_patient_data".format(username))
+
+# Create an Iceberg table for healthcare patient data
+spark.sql("""
+    CREATE TABLE default.{}_healthcare_patient_data (
+        patient_id STRING,
+        patient_name STRING,
+        age INT,
+        diagnosis STRING,
+        treatment STRING,
+        doctor STRING
+    )
+    USING iceberg
+""".format(username))
+
+# Insert initial patient data into the base table (CREATES A SNAPSHOT)
+spark.sql("""
+    INSERT INTO default.{}_healthcare_patient_data VALUES 
+    ('P001', 'John Doe', 45, 'Hypertension', 'Beta-blockers', 'Dr. Smith'),
+    ('P002', 'Jane Roe', 51, 'Diabetes', 'Insulin', 'Dr. Johnson')
+""".format(username))
+
+# CREATE A BRANCH 
+spark.sql("ALTER TABLE default.{}_healthcare_patient_data CREATE BRANCH testing_branch".format(username))
+
+# Insert initial patient data into the base table (CREATES A SNAPSHOT)
+spark.sql("""
+    INSERT INTO default.{}_healthcare_patient_data.branch_testing_branch VALUES 
+    ('P999', 'Richard V', 99, 'Headache', 'Time', 'Dr. Jeff')
+""".format(username))
+
+# Branch should contain the new data
+spark.sql("select * from default.{}_healthcare_patient_data.branch_testing_branch".format(username)).show()
+
+# Main table is untouched 
+spark.sql("select * from default.{}_healthcare_patient_data".format(username)).show()
+
+# Insert secondary patient data into the base table (CREATES A SNAPSHOT)
+spark.sql("""
+    INSERT INTO default.{}_healthcare_patient_data VALUES 
+    ('P001', 'John Roe', 415, 'Hypertension', 'Beta-blockers', 'Dr. Smith'),
+    ('P002', 'Jane Poe', 511, 'Diabetes', 'Insulin', 'Dr. Johnson')
+""".format(username))
+
+# Merge the branch back into the base table
+spark.sql("""
+    MERGE INTO default.{}_healthcare_patient_data AS base
+    USING default.{}_healthcare_patient_data.branch_testing_branch AS branch
+    ON base.patient_id = branch.patient_id
+    WHEN MATCHED THEN UPDATE SET base.patient_name = branch.patient_name,
+                                 base.age = branch.age,
+                                 base.diagnosis = branch.diagnosis,
+                                 base.treatment = branch.treatment,
+                                 base.doctor = branch.doctor
+    WHEN NOT MATCHED THEN INSERT (patient_id, patient_name, age, diagnosis, treatment, doctor)
+    VALUES (branch.patient_id, branch.patient_name, branch.age, branch.diagnosis, branch.treatment, branch.doctor)
+""".format(username,username))
+
+# BRANCH HAS NOW BEEN MERGED INTO BASE
+spark.sql("select * from default.{}_healthcare_patient_data".format(username)).show()
+
+# Drop the branch after the merge if no longer needed
+spark.sql("ALTER TABLE default.{}_healthcare_patient_data DROP BRANCH testing_branch".format(username))
 ```
