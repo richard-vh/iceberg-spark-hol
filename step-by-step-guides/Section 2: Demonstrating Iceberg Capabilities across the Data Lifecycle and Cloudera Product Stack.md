@@ -13,7 +13,7 @@ Your workload user name and password has been provided by the facilitator e.g. u
 We're going to create some Iveberg tables to use across the labs in this section.
 
 1. Sign in to the Cloudera Control Plane web interface.
-2. On the **Data Warehouse** tile, click on the kebab menu (3 vertical dots) and select **Open Data Warehouse**.
+2. On the **Data Warehouse** tile, click on the ellipses &#10247;and select **Open Data Warehouse**.
 
 ![alt text](../img/icebergcdw1.png)
 
@@ -66,5 +66,24 @@ SELECT * FROM default.${username}_laptop_data_scored;
 
 ![alt text](../img/icebergcdw4.png)
 
+If all is good then we're ready to get on with using Iceberg across the Data Lifecycle!!!
 
-   
+## Lab 1. Streaming Data Ingestion to Iceberg using Cloudera Data Flow
+
+### Deploy a Custom Data Flow Template
+
+Data Flow Templates make it easier to reuse and distribute data flows or specific parts of data flows. Besides reducing development time, reuse also supports the adoption of standards and patterns in data flow design. Data flow templates can help you to build a library of reusable elements that you can use as pre-built components in your new flows.
+
+1. Go back to the Cloudera Control Plane web interface.
+2. Click the **Data Flow** tile.
+
+![alt text](../img/icebergcdf1.png)
+
+3. The Data Flow landing page will open in your browser which is the Overview menu item from the menu on the left side on the screen. This page provides quick access to Data Flow features and other resources, guides and releaes information.
+
+![alt text](../img/icebergcdf2.png)
+
+4. Let's familiarise ourselves with the Data Flow service by cycling through the menu items. In the left hand menu select the next menu item **Deployments**. The Deployments page is the central place for managing and monitoring your Data Flow deployments running on Kubernetes and each executing a specific flow definition.
+
+![alt text](../img/icebergcdf3.png)
+  
