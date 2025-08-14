@@ -682,7 +682,74 @@ df = spark.sql("SELECT * FROM default.{}_european_cars_rollback".format(username
 df.show(truncate=False)
 ```
 
-## Lab 6: Iceberg Branching and Merging
+## Lab 6: Iceberg Tagging, Branching and Merging
+
+![alt text](../img/branchtag.png)
+
+### Iceberg Tagging
+
+**What Are Tags in Iceberg?**
+ * Tags in Iceberg are a way to label or annotate specific versions of a table.
+ * A tag can be used to mark a specific snapshot, making it easier to reference or roll back to a particular point in time.
+ * Tags help manage the history and versions of the dataset, providing a mechanism for versioning without needing to create multiple tables.
+
+**How to Use Tags for Versioning and Metadata**
+ * Versioning: Tags allow you to mark versions of data with meaningful names like v1.0, snapshot_2025_01_01, or test_run.
+ * Metadata Management: You can attach custom metadata to snapshots, such as the name of the person who performed a change or the reason for a particular change.
+ * Tags can be helpful when needing to easily access a specific version or snapshot of data without remembering the snapshot ID.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how tags are created in Iceberg tables and can be used to query table data at a point in time using a tag name as opposed to using a snapshot id.
+
+```ruby
+# DROP THE LANDMARKS TABLE IF IT EXISTS
+spark.sql("DROP TABLE IF EXISTS default.{}_belfast_landmarks".format(username))
+
+# CREATE ICEBERG TABLE TO STORE LANDMARK DATA
+spark.sql("""
+    CREATE TABLE IF NOT EXISTS default.{}_belfast_landmarks (
+        landmark_id STRING,
+        landmark_name STRING,
+        location STRING,
+        description STRING
+    )
+    USING iceberg
+""".format(username))
+
+# INSERT SAMPLE DATA INTO THE LANDMARKS TABLE
+spark.sql("""
+    INSERT INTO default.{}_belfast_landmarks VALUES 
+    ('L001', 'Titanic Belfast', 'Belfast', 'Interactive museum about the RMS Titanic'),
+    ('L002', 'Belfast Castle', 'Belfast', '19th-century castle offering views of the city and hills')
+""".format(username))
+
+# CREATE TAG FOR THE LANDMARKS TABLE WITH RETENTION PERIOD
+spark.sql("""
+    ALTER TABLE default.{}_belfast_landmarks CREATE TAG 5DAY_TAG RETAIN 5 DAYS
+""".format(username))
+
+# INSERT ADDITIONAL SAMPLE DATA INTO THE LANDMARKS TABLE
+spark.sql("""
+    INSERT INTO default.{}_belfast_landmarks VALUES 
+    ('L003', 'Queen’s University Belfast', 'Belfast', 'A prestigious university known for its research and history'),
+    ('L004', 'Stormont', 'Belfast', 'Northern Ireland’s parliament buildings and grounds'),
+    ('L005', 'Crumlin Road Gaol', 'Belfast', 'Historic prison turned into a museum'),
+    ('L006', 'Botanic Gardens', 'Belfast', 'Public gardens featuring the Palm House and Tropical Ravine'),
+    ('L007', 'Ulster Museum', 'Belfast', 'A museum housing art, history, and natural sciences exhibits'),
+    ('L008', 'Titanic Dry Dock', 'Belfast', 'The historic dock where the RMS Titanic was fitted out')
+""".format(username))
+
+# QUERY AND DISPLAY THE DATA INSERTED INTO THE LANDMARKS TABLE
+df = spark.sql("SELECT * FROM default.{}_belfast_landmarks".format(username))
+df.show(100, False)
+
+# QUERY AND DISPLAY REFERENCE DATA (TAGS) FOR THE LANDMARKS TABLE
+spark.sql("SELECT * FROM default.{}_belfast_landmarks.refs".format(username)).show(100, False)
+
+spark.sql("SELECT * FROM default.{}_belfast_landmarks VERSION AS OF '5DAY_TAG'".format(username)).show(100, False)
+
+```
 
 ### Creating Branches in Iceberg
 
@@ -751,7 +818,7 @@ Merging branches in Iceberg means consolidating the changes made in a branch int
 
 **Code Example:**
 
-In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how DML operations create snapshots and how we can use these snapshots to do table rollbacks.
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how isolated data created branches can be merged back into the main branch of Iceberg tables.
 
 ```ruby
 # Drop the table if it exists, so we can rerun the code
