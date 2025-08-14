@@ -904,7 +904,7 @@ In-place migration from Parquet to Iceberg allows seamless conversion without mo
 In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how a Hive table is migratred in-place to an Iceberg table.
 
 > [!TIP] 
-> Using an in-place table migration is the fastest most efficient way to convert tables to Iceberg tables as just the metadata is rewritten, not the data files.
+> Using an in-place table migration is the fastest, most efficient way to convert tables to Iceberg tables as just the metadata is rewritten, not the data files.
 
 ```ruby
 # Create a regular Parquet table with sample data
@@ -990,4 +990,122 @@ spark.sql("SELECT * FROM default.{}_ctas_cloudera_iceberg".format(username)).sho
 spark.sql("DESCRIBE FORMATTED default.{}_ctas_cloudera_iceberg".format(username)).show()
 ```
 
+## Lab 8: Iceberg Table Maintenance
 
+### Iceberg Compaction
+
+**What is Iceberg Compaction?**
+
+Iceberg compaction is the process of merging small data files within an Iceberg table into larger files to improve query performance and reduce metadata overhead. Iceberg writes immutable files, and over time, frequent inserts, updates, and deletes can lead to small files that impact efficiency.
+
+**Why is it important?**
+
+ * Optimizes Read Performance: Reduces the number of files scanned during queries.
+ * Reduces Metadata Overhead: Merging files minimizes the number of metadata entries.
+ * Enhances Storage Efficiency: Helps avoid excessive small files that increase storage costs.
+ * Improves Query Planning: Fewer files mean better optimization by the query engine.
+
+**What's the Impact?**
+
+ * Reduced Query Latency: Faster scans with fewer files.
+ * Lower Metadata Management Overhead: Smaller metadata files and fewer manifest entries.
+ * Potential Higher Write Costs: Compacting frequently can increase write costs if not managed properly.
+
+> [!NOTE] 
+> Impact on Time Travel: Since compaction rewrites data files, older snapshots may lose access to the original files, potentially limiting time travel capabilities. 
+
+### Iceberg Expiring Snapshots
+
+**What are Expiring Snapshots?**
+
+Iceberg maintains a history of table snapshots, allowing for time travel and rollback. Expiring snapshots is the process of removing older snapshots that are no longer needed to free up storage and improve metadata performance.
+
+**Why is it important?**
+
+ * Manages Storage Growth: Prevents unnecessary accumulation of outdated snapshots.
+ * Improves Query Planning: Reduces metadata size, making query planning more efficient.
+ * Controls Data Retention: Helps enforce compliance policies by retaining only necessary snapshots.
+
+**What's the Impact?**
+
+ * Frees Up Storage Space: Reduces disk usage by removing old metadata and data files.
+ * Improves Query Performance: Smaller metadata means faster query planning.
+ * Irreversible Data Loss: Once expired, snapshots cannot be restored, so retention policies must be carefully set.
+ * Cleans Up Old Manifest Files: Expiring snapshots removes outdated manifest files, keeping metadata management efficient.
+
+**Code Example:**
+
+In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how small files can be compacted and how historic snapshots can be expired
+
+```ruby
+# Drop the table if it exists
+spark.sql("DROP TABLE IF EXISTS default.{}_machinery_compaction".format(username))
+
+# Create a new Iceberg table for construction machinery
+spark.sql("""
+    CREATE TABLE default.{}_machinery_compaction (
+        machine_id STRING,
+        model STRING,
+        manufacturer STRING,
+        weight DOUBLE,
+        status STRING
+    )
+    USING iceberg
+""".format(username))
+
+# Insert multiple small files by writing data in multiple transactions
+spark.sql("""
+    INSERT INTO default.{}_machinery_compaction VALUES
+    ('M001', 'Excavator X1', 'Caterpillar', 12500.5, 'Active'),
+    ('M002', 'Bulldozer B2', 'Komatsu', 14500.0, 'Inactive')
+""".format(username))
+
+spark.sql("""
+    INSERT INTO default.{}_machinery_compaction VALUES
+    ('M003', 'Crane C3', 'Liebherr', 17500.2, 'Active'),
+    ('M004', 'Dump Truck D4', 'Volvo', 22000.8, 'Active')
+""".format(username))
+
+spark.sql("""
+    INSERT INTO default.{}_machinery_compaction VALUES
+    ('M005', 'Concrete Mixer CM5', 'Schwing Stetter', 9500.6, 'Inactive'),
+    ('M006', 'Loader L6', 'John Deere', 12800.4, 'Active')
+""".format(username))
+
+# Validate the data location after insertions
+spark.sql("SHOW CREATE TABLE default.{}_machinery_compaction".format(username)).show(truncate=False)
+
+# Rewrite data files to optimize file sizes (SIZE 1GB)
+spark.sql("""
+    CALL system.rewrite_data_files(table => 'default.{}_machinery_compaction', options => map('target-file-size-bytes','1073741824'))
+""".format(username)).show()
+
+# Validate the data location again after rewrite
+spark.sql("SHOW CREATE TABLE default.{}_machinery_compaction".format(username)).show(truncate=False)
+
+# Fetch the snapshot details for the table
+snapshots_df = spark.sql("""
+    SELECT * FROM default.{}_machinery_compaction.snapshots
+""".format(username))
+
+# Show the snapshots DataFrame
+snapshots_df.show()
+
+# Collect the snapshot IDs for the first three snapshots
+rollback_snapshot_id_0 = snapshots_df.collect()[0].snapshot_id  
+rollback_snapshot_id_1 = snapshots_df.collect()[1].snapshot_id  
+rollback_snapshot_id_2 = snapshots_df.collect()[2].snapshot_id  
+
+# Expire the snapshots dynamically using the collected snapshot IDs
+spark.sql("""
+    CALL system.expire_snapshots(table => 'default.{0}_machinery_compaction', snapshot_ids => array({1}, {2}, {3}))
+""".format(username,rollback_snapshot_id_0,rollback_snapshot_id_1,rollback_snapshot_id_2)).show()
+
+# Fetch the snapshot details for the table after expiring 
+spark.sql("""
+    SELECT * FROM default.{}_machinery_compaction.snapshots
+""".format(username)).show()
+
+# Verify the current state of the table
+spark.sql("SELECT * FROM default.{}_machinery_compaction".format(username)).show(truncate=False)
+```
