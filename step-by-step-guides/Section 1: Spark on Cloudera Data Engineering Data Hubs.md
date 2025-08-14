@@ -684,7 +684,7 @@ df.show(truncate=False)
 
 ## Lab 6: Iceberg Tagging, Branching and Merging
 
-![alt text](../img/branchtag.png)
+![alt text](../img/icebergbranchtag.png)
 
 ### Iceberg Tagging
 
