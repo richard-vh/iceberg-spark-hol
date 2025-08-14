@@ -512,6 +512,8 @@ df.show(truncate=False)
 
 ## Lab 5: Iceberg Time Travel & Rollbacks using Snapshots
 
+![alt text](../img/icebergtimetravel.png)
+
 ### Understanding Time Travel in Iceberg
 
 **What is Time Travel in Iceberg?**
