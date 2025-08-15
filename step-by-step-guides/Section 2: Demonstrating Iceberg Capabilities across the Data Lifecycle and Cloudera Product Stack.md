@@ -153,10 +153,16 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 
 ![alt text](../img/icebergcdf18.png)
 
-10. Go back to the Flow Designer canvas but clicking **Flow Designer** in the path breadcrumb amd let's start building our flow.
+10. Go back to the Flow Designer canvas but clicking **Flow Designer** in the path breadcrumb amd let's start building our flow. You'll se an existing ExecuteContent processor on the canvas already. This is one we're already create for you to reuse that generates synthetic data. Typically this data would be coming from a source like Kafka, database system or IOT device. 
 
 ![alt text](../img/icebergcdf19.png)
 
 11. On the tool menu on the left drag and drop a **Processor** tool onto your canvas. A popup will appear where you enter **MergeContent** into the search bar. Once it's found the **MergeContent** processor click the **Add** button to add it to your canvas.
 
 ![alt text](../img/icebergcdf20.gif)
+
+12. **Repeat** the same process to add a **PutIceberg** processor to your canvas.
+    
+13. Drag and drop the two new processors to align them neatly on your canvas in the order **ExecuteContent -> MergeContent -> PutIceberg**. Now move your cursor to the bottom right of each processor, clicking the arrow area and dargging and dropping the arrow to the processor you want to connect it to as shown below. For the **ExecuteContent -> MergeContent** connection select the condition of **Success** for the link and for the  **MergeContent -> PutIceberg** connection select the condition of **MergeContent** for the link.
+
+![alt text](../img/icebergcdf21.gif)
