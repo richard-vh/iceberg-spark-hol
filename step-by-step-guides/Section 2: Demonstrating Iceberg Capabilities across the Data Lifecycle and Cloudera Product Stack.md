@@ -70,9 +70,9 @@ If all is good then we're ready to get on with using Iceberg across the Data Lif
 
 ## Lab 1. Streaming Data Ingestion to Iceberg using Cloudera Data Flow
 
-### Deploy a Custom Data Flow Template
+### Overview of the Cloudera Data Flow Service
 
-Data Flow Templates make it easier to reuse and distribute data flows or specific parts of data flows. Besides reducing development time, reuse also supports the adoption of standards and patterns in data flow design. Data flow templates can help you to build a library of reusable elements that you can use as pre-built components in your new flows.
+Cloudera Data Flow is a cloud-native universal data distribution service powered by Apache NiFi​​ that enables you to connect to any data source, process and deliver data to any destination. The cloud-native service enables self-serve deployments of Apache NiFi data flows from a central catalog into auto-scaling Kubernetes clusters, with centralized monitoring and alerting capabilities for the deployments. Let's familiarise ourselves with the Data Flow service.
 
 1. Go back to the Cloudera Control Plane web interface.
 2. Click the **Data Flow** tile.
@@ -83,7 +83,7 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 
 ![alt text](../img/icebergcdf2.png)
 
-4. Let's familiarise ourselves with the Data Flow service by cycling through the menu items. In the left hand menu select the next menu item **Deployments**. The Deployments page is the central place for managing and monitoring your Data Flow deployments running on Kubernetes and each executing a specific flow definition.
+4. In the left hand menu select the next menu item **Deployments**. The Deployments page is the central place for managing and monitoring your Data Flow deployments running on Kubernetes and each executing a specific flow definition.
 
 ![alt text](../img/icebergcdf3.png)
 
@@ -112,6 +112,25 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 ![alt text](../img/icebergcdf9.png)
 
 10. In the left hand menu select the next menu item **Environments**. Enviornments list all the automatically discovered enviornments in your Cloudera tenant and where Data Flow can be enabled or disbaled for each environment.
- 
+
 ![alt text](../img/icebergcdf10.png)
 
+### Deploy a Custom Data Flow Template
+
+Data Flow Templates make it easier to reuse and distribute data flows or specific parts of data flows. Besides reducing development time, reuse also supports the adoption of standards and patterns in data flow design. Data flow templates can help you to build a library of reusable elements that you can use as pre-built components in your new flows.
+
+1. In the left hand menu select the next menu item **Catalog**. In the search field search for **hol-iceberg-populator**.
+  
+![alt text](../img/icebergcdf11.png)
+
+2. Click the flow name **hol-iceberg-populator** and a context window will appear on the right side of the screen. In this context window click the **Deploy** button.
+
+![alt text](../img/icebergcdf12.png)
+
+3. In the **New Deployment** popup screen, select **hol-aws-env** and then click the **Continue** button.
+
+![alt text](../img/icebergcdf13.png)
+
+4. You are now in a deployment workflow. Enter a **Deployment Name** substituting your user id in the format <userxxx>-dataflow-hol. Select **Workshop** for the **Target Project**.
+
+![alt text](../img/icebergcdf14.png)
