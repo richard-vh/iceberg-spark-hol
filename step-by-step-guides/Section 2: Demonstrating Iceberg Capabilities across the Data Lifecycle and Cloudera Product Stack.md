@@ -131,6 +131,17 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 
 ![alt text](../img/icebergcdf13.png)
 
-4. You are now in a deployment workflow. Enter a **Deployment Name** substituting your user id in the format <userxxx>-dataflow-hol. Select **Workshop** for the **Target Project**.
+4. You are now in a deployment workflow. Enter a **Deployment Name** substituting your user id in the format <userxxx>-dataflow-hol. Select **Workshop** for the **Target Project**. Click the **Next** button.
 
 ![alt text](../img/icebergcdf14.png)
+
+5. On the **Nifi Configuration** screen, you should not have to change anything but make sure the settings are as shown below. Click the **Next** button.
+
+![alt text](../img/icebergcdf15.png)
+
+6. On the **Parameters** screen, you set the parameters values as indicated below substituting your assigned user id and password. Click the **Next** button.
+ * CDP Workload User: <userxxx>
+ * CDP Workload User Password: <userxxx_password>
+ * Iceberg Table: <userxxx>_laptop_data
+
+![alt text](../img/icebergcdf16.png)
