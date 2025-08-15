@@ -140,8 +140,14 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 ![alt text](../img/icebergcdf15.png)
 
 6. On the **Parameters** screen, you set the parameters values as indicated below substituting your assigned user id and password. Click the **Next** button.
- * CDP Workload User: <userxxx>
- * CDP Workload User Password: <userxxx_password>
- * Iceberg Table: <userxxx>_laptop_data
+ * CDP Workload User: **userxxx**
+ * CDP Workload User Password: **userxxx_password**
+ * Iceberg Table: **userxxx_laptop_data**
 
 ![alt text](../img/icebergcdf16.png)
+
+7. Review the **Sizing & Scaling** and **Key Performance Indicators** screens, clicking the **Next** button for each screen.
+
+8. Finally on the **Review** screen, review the deployment configurations and click the **Deploy** button.
+
+![alt text](../img/icebergcdf17.png)
