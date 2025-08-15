@@ -123,31 +123,40 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
   
 ![alt text](../img/icebergcdf11.png)
 
-2. Click the flow name **hol-iceberg-populator** and a context window will appear on the right side of the screen. In this context window click the **Deploy** button.
+2. Click the flow name **hol-iceberg-populator** and a context window will appear on the right side of the screen. In this context window click the **Actions** dropdown button and select **Create New Draft**.
 
 ![alt text](../img/icebergcdf12.png)
 
-3. In the **New Deployment** popup screen, select **hol-aws-env** and then click the **Continue** button.
+3. In the **Create New Draft** popup screen, select **hol-aws-env** for the **Target Namespace**, **Workshop** for the **Target Project** and **userxxx-hol-iceberg-populator** for the **Draft Name** substituting your assigned user id. Then click the **Create** button. This will display the **Test Session** config page. Accept all the default values and click the **Start Test Session** button.
 
 ![alt text](../img/icebergcdf13.png)
 
-4. You are now in a deployment workflow. Enter a **Deployment Name** substituting your user id in the format <userxxx>-dataflow-hol. Select **Workshop** for the **Target Project**. Click the **Next** button.
+4. A Flow Design canvas will open for you. At the top right of the screen click **Flow Options**, and under that **Test Session** section click the **Start** button. This is going to spin up resource container for us to build our flow.
 
 ![alt text](../img/icebergcdf14.png)
 
-5. On the **Nifi Configuration** screen, you should not have to change anything but make sure the settings are as shown below. Click the **Next** button.
+5. While we wait for the Test Session to initialise up, at the top right of the screen click **Flow Options**, and under that click on **Parameters**. 
 
 ![alt text](../img/icebergcdf15.png)
 
-6. On the **Parameters** screen, you set the parameters values as indicated below substituting your assigned user id and password. Click the **Next** button.
+6. On the **Parameters** screen, set the parameters values as indicated below substituting your assigned user id and password. Click the **Apply** button after making the changes and ignore any warnings messages.
  * CDP Workload User: **userxxx**
  * CDP Workload User Password: **userxxx_password**
- * Iceberg Table: **userxxx_laptop_data**
 
 ![alt text](../img/icebergcdf16.png)
 
-7. Review the **Sizing & Scaling** and **Key Performance Indicators** screens, clicking the **Next** button for each screen.
-
-8. Finally on the **Review** screen, review the deployment configurations and click the **Deploy** button.
+7. At the top right of the screen click **Flow Options** again, and under that click on **Services**.
 
 ![alt text](../img/icebergcdf17.png)
+
+9. On the Services page, click on each disabled services and click the Enable button for each one. After unebaling they should all have a green check icon next to them :white_check_mark:.
+
+![alt text](../img/icebergcdf18.png)
+
+10. Go back to the Flow Designer canvas but clicking **Flow Designer** in the path breadcrumb amd let's start building our flow.
+
+![alt text](../img/icebergcdf19.png)
+
+11. On the tool menu on the left drag and drop a **Processor** tool onto your canvas. A popup will appear where you enter **MergeContent** into the search bar. Once it's found the **MergeContent** processor click the **Add** button to add it to your canvas.
+
+![alt text](../img/icebergcdf20.gif)
