@@ -211,7 +211,7 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 
 ![alt text](../img/icebergcdf28.png)
 
-20. If no warnings appear on the **PutIceberg** processor we can go to Hue SQL IDE and check we are getting data into our Iceberg table. See if you can remember how to to do this
+21. If no warnings appear on the **PutIceberg** processor we can go to Hue SQL IDE and check we are getting data into our Iceberg table. See if you can remember how to to do this
 > [!TIP] 
 > **Data Warehouse** tile -> **Open Data Warehouse** -> **Virtual Warehouses** -> **workshop-impala-vw** -> **Hue**
 
@@ -220,3 +220,7 @@ select * from default.${username}_laptop_data_high;
 ```
 ![alt text](../img/icebergcdf29.png)
 
+22. Finally go back to your **Flow Designer** canvas and right click the **PutIceberg** processor and select the **Start** option. Our flow is running fully now and will continue to stream data into our Iceberg table. Typically we would productionise our flow by publishing it back to the **Catalog** and creating a **Deployment** it onto an autoscaling Kubernetes containers where it can be centrally monitored. But for the purposes of this hands on lab we can leave it running in the Test Session.
+
+![alt text](../img/icebergcdf30.png)
+  
