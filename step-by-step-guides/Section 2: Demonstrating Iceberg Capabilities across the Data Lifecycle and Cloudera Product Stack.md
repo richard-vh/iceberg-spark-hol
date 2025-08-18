@@ -207,7 +207,7 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 
 ![alt text](../img/icebergcdf27.png)
 
-20.  On the canvas right click the **PutIceberg** processor and select the **Run Once** option.
+20.  On the canvas right click the **PutIceberg** processor and select the **Run Once** option. This is a reallyt interesting feauture about Nifi where you can develop on the fly and control flowfiles between Processors individually while building and testing your flow without having to recomplie anything.
 
 ![alt text](../img/icebergcdf28.png)
 
@@ -218,3 +218,5 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 ```ruby
 select * from default.${username}_laptop_data_high;
 ```
+![alt text](../img/icebergcdf29.png)
+
