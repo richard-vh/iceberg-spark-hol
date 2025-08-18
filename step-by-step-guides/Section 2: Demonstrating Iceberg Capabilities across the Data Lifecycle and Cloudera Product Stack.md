@@ -258,4 +258,18 @@ Additionally, we will use JupyterLab within Cloudera AI to interact with and int
 
 ![alt text](../img/icebergcai6.png)
 
+### Running Interactive Spark Session and Training and Tuning Models
 
+7. Click **Sessions** in the left menu and click the **New Session** button.
+
+![alt text](../img/icebergcai7.png)
+
+8. In the **Start A New Session** dialog use the following values, substituting your supplied user id. Once you're done click the **Start Session** button.
+ * Session Name: **userxxx-session**
+ * Runtime 
+   * Editor: **PBJ Workbench**
+   * Kernel: **Python 3.10**
+   * Edition: **Standard**
+ * **Enable Spark** toggle  
+
+![alt text](../img/icebergcai8.png)
