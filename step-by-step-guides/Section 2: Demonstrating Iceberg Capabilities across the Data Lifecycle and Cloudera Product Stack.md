@@ -174,7 +174,7 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
        * failure: Terminate
        * original: Terminate 
 
-![alt text](../img/icebergcdf22.gif)
+![alt text](../img/icebergcdf22.png)
 
 15. On the canvas select the **PutIceberg** processor. In the conext window on the right set the following **Properties** and **Relationships** values for the processor:
      * Properties:
@@ -186,4 +186,4 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
        * failure: Terminate
        * original: Terminate 
 
-![alt text](../img/icebergcdf23.gif)
+![alt text](../img/icebergcdf23.png)
