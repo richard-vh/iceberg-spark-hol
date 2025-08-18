@@ -135,7 +135,7 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 
 ![alt text](../img/icebergcdf14.png)
 
-5. While we wait for the Test Session to initialise up, at the top right of the screen click **Flow Options**, and under that click on **Parameters**. 
+5. After the Test Session has initialised, at the top right of the screen click **Flow Options**, and under that click on **Parameters**. 
 
 ![alt text](../img/icebergcdf15.png)
 
@@ -166,3 +166,24 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 13. Drag and drop the two new processors to align them neatly on your canvas in the order **ExecuteContent -> MergeContent -> PutIceberg**. Now move your cursor to the bottom right of each processor, clicking the arrow area and dargging and dropping the arrow to the processor you want to connect it to as shown below. For the **ExecuteContent -> MergeContent** connection select the condition of **Success** for the link and for the  **MergeContent -> PutIceberg** connection select the condition of **Merged** for the link.
 
 ![alt text](../img/icebergcdf21.gif)
+
+14. On the canvas select the **MergeContent** processor. In the conext window on the right set the following **Properties** and **Relationships** values for the processor:
+     * Properties:
+       * Minimum Number of Entries: 10
+     * Relationships:
+       * failure: Terminate
+       * original: Terminate 
+
+![alt text](../img/icebergcdf22.gif)
+
+15. On the canvas select the **PutIceberg** processor. In the conext window on the right set the following **Properties** and **Relationships** values for the processor:
+     * Properties:
+       * Record Reader: JsonTreeReader
+       * Catalog Service: HiveCatalogService
+       * Catalog Namespace: Select the ellipses &#10247;and select **Convert to Parameter**. In the **Add Parameter** popup, enter **default** into the **Value** field and click **Apply** button.
+       * Table Name: Select the ellipses &#10247;and select **Convert to Parameter**. In the **Add Parameter** popup, enter **userxxx_laptop_high_data** into the **Value** field substituting your assigned user id and click **Apply** button.
+     * Relationships:
+       * failure: Terminate
+       * original: Terminate 
+
+![alt text](../img/icebergcdf22.gif)
