@@ -182,7 +182,7 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
        * Record Reader: JsonTreeReader (select from dropdown)
        * Catalog Service: HiveCatalogService (select from dropdown)
        * Catalog Namespace: Select the ellipses &#10247;and select **Convert to Parameter**. In the **Add Parameter** popup, enter **default** into the **Value** field and click **Apply** button.
-       * Table Name: Select the ellipses &#10247;and select **Convert to Parameter**. In the **Add Parameter** popup, enter **userxxx_laptop_high_data** into the **Value** field substituting your assigned user id and click **Apply** button.
+       * Table Name: Select the ellipses &#10247;and select **Convert to Parameter**. In the **Add Parameter** popup, enter **userxxx_laptop_data** into the **Value** field substituting your assigned user id and click **Apply** button.
        * Kerberos User Service: KerberosPasswordUserService (select from dropdown)
      * Relationships:
        * failure: Terminate
@@ -216,11 +216,19 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 > **Data Warehouse** tile -> **Open Data Warehouse** -> **Virtual Warehouses** -> **workshop-impala-vw** -> **Hue**
 
 ```ruby
-select * from default.${username}_laptop_data_high;
+select * from default.${username}_laptop_data;
 ```
 ![alt text](../img/icebergcdf29.png)
 
 22. Finally go back to your **Flow Designer** canvas and right click the **PutIceberg** processor and select the **Start** option. Our flow is running fully now and will continue to stream data into our Iceberg table. Typically we would productionise our flow by publishing it back to the **Catalog** and creating a **Deployment** it onto an autoscaling Kubernetes containers where it can be centrally monitored. But for the purposes of this hands on lab we can leave it running in the Test Session.
 
 ![alt text](../img/icebergcdf30.png)
-  
+
+## Lab 2. Machine Learning with Iceberg tables using Cloudera AI
+
+Another approach to evaluate and review your data is by using Cloudera AI. In this exercise, we will analyze the simple Iceberg dataset we created above by developing and training an anomaly detection model to identify unusually high and low laptop temperatures.
+Additionally, we will use JupyterLab within Cloudera AI to interact with and integrate the model’s output, enabling further exploration and analysis.
+
+### Creating and Setting up your Cloudera AI Project
+
+
