@@ -202,3 +202,19 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 18. We can inspect the flowfiles that have been generated in the Queue by selecting any of the folowfile records and clicking on the **Open Data in Viewer** icon. Take a look at the data that is being generated across the different flowfiles.
 
 ![alt text](../img/icebergcdf26.png)
+
+19. On the canvas right click the **MergeContent** processor and select the **Start** option. Right click on the **mergecontent** relationship block and select the **List Queue** option. As in the step before look at the data in the flowfile and notice how it's merged the the original flowfiles into a larger flowflow based on the settings configured in the **MergeContent** processor.
+
+![alt text](../img/icebergcdf27.png)
+
+20.  On the canvas right click the **PutIceberg** processor and select the **Run Once** option.
+
+![alt text](../img/icebergcdf28.png)
+
+20. If no warnings appear on the **PutIceberg** processor we can go to Hue SQL IDE and check we are getting data into our Iceberg table. See if you can remember how to to do this
+> [!TIP] 
+> **Data Warehouse** tile -> **Open Data Warehouse** -> **Virtual Warehouses** -> **workshop-impala-vw** -> **Hue**
+
+```ruby
+select * from default.${username}_laptop_data_high;
+```
