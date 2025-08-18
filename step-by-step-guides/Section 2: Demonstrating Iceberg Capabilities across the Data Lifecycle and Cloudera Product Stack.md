@@ -172,18 +172,33 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
        * Minimum Number of Entries: 10
      * Relationships:
        * failure: Terminate
-       * original: Terminate 
+       * original: Terminate
+    Click the **Apply** button at yhe bottom of the Processor context window. 
 
 ![alt text](../img/icebergcdf22.png)
 
 15. On the canvas select the **PutIceberg** processor. In the conext window on the right set the following **Properties** and **Relationships** values for the processor:
      * Properties:
-       * Record Reader: JsonTreeReader
-       * Catalog Service: HiveCatalogService
+       * Record Reader: JsonTreeReader (select from dropdown)
+       * Catalog Service: HiveCatalogService (select from dropdown)
        * Catalog Namespace: Select the ellipses &#10247;and select **Convert to Parameter**. In the **Add Parameter** popup, enter **default** into the **Value** field and click **Apply** button.
        * Table Name: Select the ellipses &#10247;and select **Convert to Parameter**. In the **Add Parameter** popup, enter **userxxx_laptop_high_data** into the **Value** field substituting your assigned user id and click **Apply** button.
+       * Kerberos User Service: KerberosPasswordUserService (select from dropdown)
      * Relationships:
        * failure: Terminate
-       * original: Terminate 
+       * original: Terminate
+  Click the **Apply** button at yhe bottom of the Processor context window. 
 
 ![alt text](../img/icebergcdf23.png)
+
+16. On the canvas right click the **ExecuteScript** processor and select the **Start** option.
+
+![alt text](../img/icebergcdf24.png)
+
+17. You should notice the **ExecuteScript** processor changes icon status to green meaning it's running and you should see flowfiles accumulating in the **Success** relationhip. Right click on the **Success** relationship block and select the **List Queue** option.
+
+![alt text](../img/icebergcdf25.png)
+
+18. We can inspect the flowfiles that have been generated in the Queue by selecting any of the folowfile records and clicking on the **Open Data in Viewer** icon. Take a look at the data that is being generated across the different flowfiles.
+
+![alt text](../img/icebergcdf26.png)
