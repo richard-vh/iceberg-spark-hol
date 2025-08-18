@@ -231,4 +231,31 @@ Additionally, we will use JupyterLab within Cloudera AI to interact with and int
 
 ### Creating and Setting up your Cloudera AI Project
 
+1. From the CDP Control plane, click the **Cloudera AI** tile.
+
+![alt text](../img/icebergcai1.png)
+
+2. In the **Cloudera AI** application select the **nemea-workshop-v1** workbench to open it.
+
+![alt text](../img/icebergcai2.png)
+
+3. This will open the Cloudera AI workbench Landing Page. Click the **Create a new project** tile on the top left of the landing page.
+
+![alt text](../img/icebergcai3.png)
+
+4. In the **New Project** dialog, supply a Project Name in the format of **userxxx-project**, substituting you supplied user id. For **Initial Setup** select the **Git** option and use the following **HTTPS** path **https://github.com/richard-vh/iceberg-spark-hol-cai.git**. Click the **Create Project** button.
+
+![alt text](../img/icebergcai4.png)
+
+5. In your new project, click on **Project Settings** in the left menu.
+
+![alt text](../img/icebergcai5.png)
+
+6. Under the **Project Settings**, **Advanced** tab, add the following **Enviornment Variables**, substituting your supplied user id (click the + button to add). Once you're done click the **Sumbit** button.
+   * SOURCE_TABLE_NAME: **default.userxxx_laptop_data**
+   * DESTINATION_TABLE_NAME: **default.userxxx_laptop_data_scored**
+   * DATALAKE_NAME: **nemea-hol-v2-aw-dl**
+
+![alt text](../img/icebergcai6.png)
+
 
