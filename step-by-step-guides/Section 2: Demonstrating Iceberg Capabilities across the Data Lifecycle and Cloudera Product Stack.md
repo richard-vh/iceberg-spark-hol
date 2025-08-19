@@ -273,3 +273,23 @@ Additionally, we will use JupyterLab within Cloudera AI to interact with and int
    * **Enable Spark** toggle  
 
 ![alt text](../img/icebergcai8.png)
+
+9. After the session container initialises, click the **Close** button on the **Connection Code Snippet** dialog if it appears.
+
+![alt text](../img/icebergcai9.png)
+
+10. In the left menu, click on **0 - bootstrap.py** to open the file in the editor. This file is used to load the required Python packages for this lab. Review the **requirements.txt** file on the left menu to understand what packages will be downloaded and installed. Click on **0 - bootstrap.py** again to open the file in the editor. Run the file by clicking the play &#9658; button. Review the messges in the **Session** output pane on the right - once the packages have successfully installed you'll see the message **PYTHON PACKAGES ARE INSTALLED**.
+
+![alt text](../img/icebergcai10.png)
+
+11. In the left menu, click on **1 - mlflow-code-training.py** to open the file in the editor. Review the script - it connects to a Spark data source, retrieves sensor-like data (latitude, longitude, temperature) from our ceberg table (**SOURCE_TABLE_NAME** variable), and converts it into a Pandas DataFrame for anomaly detection.It uses a parameter grid to train multiple Isolation Forest models with different hyperparameters, logging each run’s parameters, metrics (e.g., anomaly rate), and artifacts (trained model files and scored sample CSVs) to MLflow.The process includes automatic directory creation, experiment setup, model training, anomaly scoring, metric calculation, and artifact storage, enabling reproducible experimentation and result tracking. Run the file by clicking the play &#9658; button.
+
+In the **Session** output messages in the right pane after the file has run you'll see the message **All runs complete**. If you examine the Session output messages you'll notice the ML model has been run 3 experiments with different parameters under the MLFlow experiment name **anomaly_detection_experiment_training** (Can you spot this setup in the script?). We'll review this in the CAI **Experiments** section later in the section **Reviewing Prior Model Runs**. 
+
+![alt text](../img/icebergcai11.png)
+
+12. In the left menu, click on **2 - mlflow-code.py** to open the file in the editor. Review the script - it connects to Spark, loads a sample of sensor-like data (latitude, longitude, temperature) from our Iceberg table (**SOURCE_TABLE_NAME** variable), and prepares features for anomaly detection. It trains an Isolation Forest model using input hyperparameters fast vs. thorough modes, logs the parameters,metrics and artifacts to MLflow, and saves a local model pickle file plus a scored CSV sample. Finally, it writes the fully scored dataset, including the anomaly flag, back to the data lake as a Parquet-backed table (**DESTINATION_TABLE_NAME** variable) for downstream analytics.. Run the file by clicking the play &#9658; button.
+
+In the **Session** output messages in the right pane after the file has run you'll see the message **Scored data saved to default.userxxx_laptop_data_scored**. You'll also notice in the file menu on the left a new model pickle file is created called **models_pkl**. 
+
+![alt text](../img/icebergcai12.png)
