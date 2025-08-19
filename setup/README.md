@@ -94,7 +94,12 @@ The file should like like this now
 
 ![alt text](/img/kernelspec.png)
 
-13. Run the following commands invidually at the command prompt
+13. For the purpose of the HOL, users need to be created so that they have home directories when logging into Jupyter. This command create user001 to user100.
+```
+echo user{001..100} | xargs -n 1 useradd -m
+```
+
+15. Run the following commands invidually at the command prompt
 ```
 systemctl daemon-reload
 systemctl enable jupyterhub
