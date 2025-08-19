@@ -312,6 +312,55 @@ Additionally, we will use JupyterLab within Cloudera AI to interact with and int
 
 ![alt text](../img/icebergcai14.png)
 
-3. In the left menu, doubleclick on **3 - jupyter-datascience.ipynb** to open the notebook. Run each code cell in the notebook by clicking on the code cell and clicking the run &#9658; button. As the cell code run you will see an [&#10033;] next to the cell while it's running. Review the comments, code and output in each cell as you run them. 
+3. In the left menu, doubleclick on **3 - jupyter-datascience.ipynb** to open the notebook. Run each code cell in the notebook by clicking on the code cell and clicking the run &#9658; button. As the cell code run you will see an [&#10033;] next to the cell while it's running. Review the comments, code and output in each cell as you run them. Finally stop your session as we've finsihed with it for now by clicking on the stop &#9632; button at the top right of the screen.
 
 ![alt text](../img/icebergcai15.png)
+
+### Reviewing Model Run Experiments
+
+In the Traing & Tuning section we completed earlier we created and MLFlow experiment where we ran the model three times provide different hyperparameter values to influence how the model learnt from the data. Let's take a closer look at the experiments we ran.
+
+1. On the left menu click **Experiments**. On the **Experiments** page you should see a **training** and **batch** experiment that we ran earlier. Click in the **training** experiment.
+
+![alt text](../img/icebergcai16.png)
+
+2. In the experiment you should see three lines. When we ran the file **1 - mlflow-code-training.py** it ran the model training three times each with different parameters for each one. The experiment allows us to easily compare each run and track model metrics to determine which parameters provided the best model training. By selecting the check box next to each of the runs we can comapre the run metrics in a tabular format. Select the checkboxes and click the **Compare** button.
+
+![alt text](../img/icebergcai17.png)
+
+3. In the Experiment run comparison screen look at the comparisons as well as plotting features available. Its worth noting that our data evaluated is incredibly small per design and the model process was not overly complicated so you may not see any significant differences. 
+
+![alt text](../img/icebergcai18.png)
+
+### Scheduling a Job in Cloudera AI
+
+Previously we ran two model training sets, training and batch. We are going to create a scheduled job to run this on a daily basis at 1am. This can be useful when you have developed a Python script which you want to run on a periodic basis or your training data changes frequently. 
+
+1. On the left menu click **Jobs**. Click the **New Job** button on the top right.
+
+![alt text](../img/icebergcai19.png)
+
+2. In the **Create Job** dialog, set the following values, substituting your supplied user id. Once ypu're done click the **Create Job** button at the bottom of the screen.
+   * Name: **userxxx-job**
+   * Script: **2 - mlflow-code.py**
+   * Runtime 
+     * Editor: **PBJ Workbench **
+     * Kernel: **Python 3.10**
+     * Edition: **Standard** 
+   * Toggle **Enable Spark** (Ensure Spark 3 is selected)
+   * Schedule: **Recurring and Day, 1, 0**
+   * Resource Profile: **2vCPU / 4 GiB Memory**
+
+![alt text](../img/icebergcai20.png)
+
+2. As we don't want to wait for 1am for the job to run, let's run it now. Click the **Run as** button on the **Jobs** page job line. You should see a message on the top right of the screen that the job has started successfully,
+
+![alt text](../img/icebergcai21.png)
+
+3. To view the job details, run history, logs and settings click on the Job Name. Click through each of the tabs and familiarise yourself with the job information available. There are four tabs:
+   * Overview: Job details and run history
+   * History: Deatiled job run history and access to logs for each job run.
+   * Dependencies: Any other job dependencies that may be chained to this job.
+   * Settings: The job settings where settings can be viewed and changed.
+  
+![alt text](../img/icebergcai22.png) 
