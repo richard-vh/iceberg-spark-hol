@@ -397,7 +397,7 @@ Next, we’ll use Cloudera DataViz to build interactive dashboards that support 
 6. In the **Create New Dataset** dialog, enter the following values substituting your assigned user id. When you're done, click the **Create** button.
    * Dataset Title: **userxxx-data**
    * Dataset Source = **From Table**
-   * Select Database = **Workshop **
+   * Select Database = **default**
    * Select Table = **userxxx_laptop_data_scored**
 
 ![alt text](../img/icebergdv5.png)
