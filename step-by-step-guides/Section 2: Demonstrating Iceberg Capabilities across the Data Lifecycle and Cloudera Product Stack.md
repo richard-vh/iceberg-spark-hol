@@ -4,7 +4,7 @@
 
 Cloudera Open Data Lakehouse powered by Apache Iceberg offers several key benefits that can significantly enhance your data management strategy. First, it provides better **performance and scalability** through innovative metadata management and flexible partitioning. It’s **fully open**, meaning there’s no vendor lock-in—thanks to its open-source foundation, it **supports a diverse ecosystem and community**. The platform also supports **multi-function analytics**, allowing different compute engines to access and process Iceberg tables concurrently and consistently. For those focused on data quality and consistency, it includes advanced capabilities like **ACID-compliant transactions, time travel, rollback, in-place partition evolution, and Iceberg replication**. Finally, Cloudera’s solution stands out with its ability to enable **multi-hybrid cloud deployments**, offering the freedom and portability to deploy wherever you need.
 
-This Hands on lab takes you through the data lifecycle showcasing the ability to work with the same Iceberg tables across multiple engine and analytics types.
+This hands-on lab takes you through the data lifecycle showcasing the ability to work with the same Iceberg tables across multiple engine and analytics types.
 
 ## Before Starting the Labs
 
@@ -220,7 +220,7 @@ select * from default.${username}_laptop_data;
 ```
 ![alt text](../img/icebergcdf29.png)
 
-22. Finally go back to your **Flow Designer** canvas and right click the **PutIceberg** processor and select the **Start** option. Our flow is running fully now and will continue to stream data into our Iceberg table. Typically we would productionise our flow by publishing it back to the **Catalog** and creating a **Deployment** it onto an autoscaling Kubernetes containers where it can be centrally monitored. But for the purposes of this hands on lab we can leave it running in the Test Session.
+22. Finally go back to your **Flow Designer** canvas and right click the **PutIceberg** processor and select the **Start** option. Our flow is running fully now and will continue to stream data into our Iceberg table. Typically we would productionise our flow by publishing it back to the **Catalog** and creating a **Deployment** it onto an autoscaling Kubernetes containers where it can be centrally monitored. But for the purposes of this hands-on lab we can leave it running in the Test Session.
 
 ![alt text](../img/icebergcdf30.png)
 
@@ -270,7 +270,8 @@ Additionally, we will use JupyterLab within Cloudera AI to interact with and int
      * Editor: **PBJ Workbench**
      * Kernel: **Python 3.10**
      * Edition: **Standard**
-   * **Enable Spark** toggle  
+   * **Enable Spark** toggle
+   * Resource Profile: **2 vCPU/4 GiB Memory**   
 
 ![alt text](../img/icebergcai8.png)
 
@@ -278,18 +279,39 @@ Additionally, we will use JupyterLab within Cloudera AI to interact with and int
 
 ![alt text](../img/icebergcai9.png)
 
-10. In the left menu, click on **0 - bootstrap.py** to open the file in the editor. This file is used to load the required Python packages for this lab. Review the **requirements.txt** file on the left menu to understand what packages will be downloaded and installed. Click on **0 - bootstrap.py** again to open the file in the editor. Run the file by clicking the play &#9658; button. Review the messges in the **Session** output pane on the right - once the packages have successfully installed you'll see the message **PYTHON PACKAGES ARE INSTALLED**.
+10. In the left menu, click on **0 - bootstrap.py** to open the file in the editor. This file is used to load the required Python packages for this lab. Review the **requirements.txt** file on the left menu to understand what packages will be downloaded and installed. Click on **0 - bootstrap.py** again to open the file in the editor. Run the file by clicking the Run &#9658;button. Review the messges in the **Session** output pane on the right - once the packages have successfully installed you'll see the message **PYTHON PACKAGES ARE INSTALLED**.
 
 ![alt text](../img/icebergcai10.png)
 
 11. In the left menu, click on **1 - mlflow-code-training.py** to open the file in the editor. Review the script - it connects to a Spark data source, retrieves sensor-like data (latitude, longitude, temperature) from our ceberg table (**SOURCE_TABLE_NAME** variable), and converts it into a Pandas DataFrame for anomaly detection.It uses a parameter grid to train multiple Isolation Forest models with different hyperparameters, logging each run’s parameters, metrics (e.g., anomaly rate), and artifacts (trained model files and scored sample CSVs) to MLflow.The process includes automatic directory creation, experiment setup, model training, anomaly scoring, metric calculation, and artifact storage, enabling reproducible experimentation and result tracking. Run the file by clicking the play &#9658; button.
 
-In the **Session** output messages in the right pane after the file has run you'll see the message **All runs complete**. If you examine the Session output messages you'll notice the ML model has been run 3 experiments with different parameters under the MLFlow experiment name **anomaly_detection_experiment_training** (Can you spot this setup in the script?). We'll review this in the CAI **Experiments** section later in the section **Reviewing Prior Model Runs**. 
+    In the **Session** output messages in the right pane after the file has run you'll see the message **All runs complete**. If you examine the Session output messages you'll notice the ML model has been run 3 experiments with different parameters under the MLFlow experiment name **anomaly_detection_experiment_training** (Can you spot this setup in the script?). We'll review this in the CAI **Experiments** section later in the section **Reviewing Prior Model Runs**. 
 
 ![alt text](../img/icebergcai11.png)
 
 12. In the left menu, click on **2 - mlflow-code.py** to open the file in the editor. Review the script - it connects to Spark, loads a sample of sensor-like data (latitude, longitude, temperature) from our Iceberg table (**SOURCE_TABLE_NAME** variable), and prepares features for anomaly detection. It trains an Isolation Forest model using input hyperparameters fast vs. thorough modes, logs the parameters,metrics and artifacts to MLflow, and saves a local model pickle file plus a scored CSV sample. Finally, it writes the fully scored dataset, including the anomaly flag, back to the data lake as a Parquet-backed table (**DESTINATION_TABLE_NAME** variable) for downstream analytics.. Run the file by clicking the play &#9658; button.
 
-In the **Session** output messages in the right pane after the file has run you'll see the message **Scored data saved to default.userxxx_laptop_data_scored**. You'll also notice in the file menu on the left a new model pickle file is created called **models_pkl**. 
+    In the **Session** output messages in the right pane after the file has run you'll see the message **Scored data saved to default.userxxx_laptop_data_scored**. You'll also notice in the file menu on the left a new model pickle file is created called **models_pkl**. Finally stop your session as we've finsihed with it for now by clicking on the stop &#9632; button at the top right of the screen.
 
 ![alt text](../img/icebergcai12.png)
+
+### Using JupyterLab to review the model output
+
+1. To use JupyterLab in CAI we need to create a Session that uses a JupyterLab editor. See if you can figure out how to start a new session (ask you instructor if you get stuck). In the **Start A New Session** dialog use the following values, substituting your supplied user id. Once you're done click the **Start Session** button.
+   * Session Name: **userxxx-jupyter-session**
+   * Runtime 
+     * Editor: **JupyterLab**
+     * Kernel: **Python 3.10**
+     * Edition: **Standard**
+   * **Enable Spark** toggle
+   * Resource Profile: **2 vCPU/4 GiB Memory**
+  
+![alt text](../img/icebergcai13.png)
+
+2. After the pod initialises the JupyterLab landing page will appear.
+
+![alt text](../img/icebergcai14.png)
+
+3. In the left menu, doubleclick on **3 - jupyter-datascience.ipynb** to open the notebook. Run each code cell in the notebook by clicking on the code cell and clicking the run &#9658; button. As the cell code run you will see an [&#10033;] next to the cell while it's running. Review the comments, code and output in each cell as you run them. 
+
+![alt text](../img/icebergcai15.png)
