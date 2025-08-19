@@ -358,9 +358,62 @@ Previously we ran two model training sets, training and batch. We are going to c
 ![alt text](../img/icebergcai21.png)
 
 3. To view the job details, run history, logs and settings click on the Job Name. Click through each of the tabs and familiarise yourself with the job information available. There are four tabs:
-   * Overview: Job details and run history
-   * History: Deatiled job run history and access to logs for each job run.
-   * Dependencies: Any other job dependencies that may be chained to this job.
-   * Settings: The job settings where settings can be viewed and changed.
+   * **Overview**: Job details and run history
+   * **History**: Deatiled job run history and access to logs for each job run.
+   * **Dependencies**: Any other job dependencies that may be chained to this job.
+   * **Settings**: The job settings where settings can be viewed and changed.
   
-![alt text](../img/icebergcai22.png) 
+![alt text](../img/icebergcai22.png)
+
+### Delete CAI Project and Clean up resources
+
+Now that we've cpmpleted the Machine Learning segment of this hands-on lab, we can delete the CAI project we created.
+
+1. On the left menu click **Project Settings** and click on the **Delete Project** tab. Click the **Delete Project** button.
+
+![alt text](../img/icebergcai23.png)
+
+## Lab 3. Data Visualization using Iceberg tables in Cloudera Data Warehouse
+
+In the previous exercises, we ingested synthetic laptop temperature data into Iceberg tables and used Cloudera AI to identify laptops showing abnormal temperature patterns.
+Next, we’ll use Cloudera DataViz to build interactive dashboards that support downstream reporting and real-time monitoring.
+
+1. Navigate to the Cloudera Data Warehouse home page. Another quick way of doing this is by clicking the **App Selector** &#x1392;&#x1392;&#x1392; image at the top left of the screen and selecting **Data Warehouse**.
+
+![alt text](../img/icebergdv1.gif)
+
+2. On the left menu click **Data Visualization**. Click the **Data Viz** button on the right of the instance that's been setup for the lab.
+
+![alt text](../img/icebergdv2.png)
+
+3. On the Data Viz landing page, click the **Data** tab on the top menu.
+   
+![alt text](../img/icebergdv3.png)
+
+5. On the **Data** page, make sure the Impala-Connection is selected and click the **New Dataset** button.
+
+![alt text](../img/icebergdv4.png)
+
+6. In the **Create New Dataset** dialog, enter the following values substituting your assigned user id. When you're done, click the **Create** button.
+   * Dataset Title: **userxxx-data**
+   * Dataset Source = **From Table**
+   * Select Database = **Workshop **
+   * Select Table = **userxxx_laptop_data_scored**
+
+![alt text](../img/icebergdv5.png)
+
+7. Click the **New Dashboard** icon shortcut next to your newly created dataset.
+
+![alt text](../img/icebergdv6.png)
+
+8. A new dashboard based on your dataset is created with a default table visual of the data. Move your dashboard to the **Public** workspace and click the **Move** button. Then give your dashboard a name **userxxx-dashboard** substituting you assigned user id.
+
+![alt text](../img/icebergdv7.png)
+
+9. Lets change the default visual in our dashboard to an **Interactive Map**. Highlight the existing visual on the dashboard by clicking on it, then click the **Build** button on the right hand menu. Under the **Visuals** section, select the **Interactive Map** visual icon.
+
+![alt text](../img/icebergdv8.png)
+
+9. In the Visual attributes section, from the field shelves drag **latitude** and **longitude** into the Visuals **Dimensions** attrubute field and drag **anomaly** into the Visuals **Measures** attribute field. Finally click the **Refresh Visual** button. You will see the deafult Table visual on the dashboard change to an Interactive Map visual.
+
+ ![alt text](../img/icebergdv9.png)
