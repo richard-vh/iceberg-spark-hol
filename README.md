@@ -41,7 +41,6 @@ The second section demonstrates Iceberg's role as a unified table format across 
 * Lab 8: Iceberg Table Maintenance
   * Iceberg Compaction
   * Iceberg Expiring Snapshots
-  * Code Example: Compaction and Expiring Snapshots
       
 ### Section 2: Demonstrating Iceberg Capabilities across the Data Lifecycle and Cloudera Product Stack
 * Before Starting the Labs
