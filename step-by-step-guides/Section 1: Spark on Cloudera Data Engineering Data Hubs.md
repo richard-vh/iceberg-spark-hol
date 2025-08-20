@@ -259,7 +259,7 @@ Iceberg tables support different storage strategies to balance performance, stor
     
 Each strategy has trade-offs, making them suitable for different workloads. The following sections provide details, comparisons, and implementation examples.
 
-### <ins>1. Iceberg Copy-on-Write (COW) Table</ins>
+### Iceberg Copy-on-Write (COW) Table
 
 **What is a Copy-on-Write Table?**: A Copy-on-Write (COW) table in Iceberg creates a new version of the data on each modification. The old data is not overwritten. Instead, a new version of the data is written to disk. This approach ensures that the data remains immutable, which makes it suitable for use cases that require strong consistency and atomicity.
 
@@ -301,7 +301,7 @@ spark.sql("""
 spark.sql("SHOW TBLPROPERTIES default.{}_cow_countries".format(username)).show(truncate=False)
 ```
 
-### <ins>2. Iceberg Merge-on-Read (MOR) Table</ins>
+### Iceberg Merge-on-Read (MOR) Table
 **What is a Merge-on-Read Table?**: Merge-on-Read (MOR) tables optimize write performance by storing changes as delta files instead of rewriting entire data files. These delta files are merged at query time, which reduces write latency but increases read complexity. This approach is particularly useful for real-time ingestion and event-driven applications, where updates occur frequently.
 
 **How it Differs from Copy-on-Write**:
