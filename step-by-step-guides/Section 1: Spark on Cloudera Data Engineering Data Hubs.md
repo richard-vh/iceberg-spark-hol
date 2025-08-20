@@ -36,7 +36,6 @@ The service provides pre-configured templates for common workloads but also allo
 * [Lab 8: Iceberg Table Maintenance](#lab-8-iceberg-table-maintenance)<br/>
   * [Iceberg Compaction](#iceberg-compaction)<br/>
   * [Iceberg Expiring Snapshots](#iceberg-expiring-snapshots)<br/>
-  * [Code Example: Compaction and Expiring Snapshots](#code-example-compaction-and-expiring-snapshots)<br/>
 
 ## Before Starting the Labs
 
@@ -1100,7 +1099,7 @@ Iceberg maintains a history of table snapshots, allowing for time travel and rol
  * Irreversible Data Loss: Once expired, snapshots cannot be restored, so retention policies must be carefully set.
  * Cleans Up Old Manifest Files: Expiring snapshots removes outdated manifest files, keeping metadata management efficient.
 
-### Code Example: Compaction and Expiring Snapshots
+## Code Example: Compaction and Expiring Snapshots
 
 In your existing Jupyter notebook add a new cell and run the code below. Examine each statement and it's output to understand how small files can be compacted and how historic snapshots can be expired
 
@@ -1178,4 +1177,4 @@ spark.sql("SELECT * FROM default.{}_machinery_compaction".format(username)).show
 
 print("Code block completed")
 ```
-## :star: Well done - You've completed these labs!
+## :star: Well done - You've completed this section of the labs!
