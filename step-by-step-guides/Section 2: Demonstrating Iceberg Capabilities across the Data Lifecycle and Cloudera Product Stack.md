@@ -6,6 +6,21 @@ Cloudera Open Data Lakehouse powered by Apache Iceberg offers several key benefi
 
 This hands-on lab takes you through the data lifecycle showcasing the ability to work with the same Iceberg tables across multiple engine and analytics types.
 
+### Agenda
+
+* [Before Starting the Labs](#before-starting-the-labs)<br/>
+* [Lab 1. Streaming Data Ingestion to Iceberg using Cloudera Data Flow](#lab-1-streaming-data-ingestion-to-iceberg-using-cloudera-data-flow)<br/>
+  * [Overview of the Cloudera Data Flow Service](#overview-of-the-cloudera-data-flow-service)<br/>
+  * [Deploy a Custom Data Flow Template](#deploy-a-custom-data-flow-template)<br/>
+* [Lab 2. Machine Learning with Iceberg tables using Cloudera AI](#lab-2-machine-learning-with-iceberg-tables-using-cloudera-ai)<br/>
+  * [Creating and Setting up your Cloudera AI Project](#creating-and-setting-up-your-cloudera-ai-project)<br/>
+  * [Running Interactive Spark Session and Training and Tuning Models](#running-interactive-spark-session-and-training-and-tuning-models)<br/>
+  * [Using JupyterLab to review the model output](#using-jupyterlab-to-review-the-model-output)<br/>
+  * [Reviewing Model Run Experiments](#reviewing-model-run-experiments)<br/>
+  * [Scheduling a Job in Cloudera AI](#scheduling-a-job-in-cloudera-ai)<br/>
+  * [Delete CAI Project and Clean up resources](#delete-cai-project-and-clean-up-resources)<br/>
+* [Lab 3. Data Visualization using Iceberg tables in Cloudera Data Warehouse](#lab-3-data-visualization-using-iceberg-tables-in-cloudera-data-warehouse)<br/>
+
 ## Before Starting the Labs
 
 Your workload user name and password has been provided by the facilitator e.g. user001/hsgdguquuqyququ. Keep it handy as you'll need it for certain configurations.
@@ -429,3 +444,6 @@ Next, we’ll use Cloudera DataViz to build interactive dashboards that support 
 12. In the Visual's attributes section, click the play &#9658; button next to the X Axis **sum(laptop_id)** field. This will open the **Field Properties** context dialog. The the field property Aggregates section, uncheck the **Sum** aggregate and change the **Alias** to **Laptop ID**. Click the play &#9658; button next to the Y Axis **sum(anomaly)** field and in the field properties **Order and Top k** section, check the **Descending** option and set **Top K** to **20**, in the **Alias** section change the field name to **Total Anomalies**. Finally click the **Refresh Visual** button - you will see the new visual on the dashboard change to an **Bar Chart** visual. Name the chart title **Top 20 Offending Laptios by Anomaly Count** and name the map chart title **Map of Offending Laptops**. Finally click the dashboard **Save** button and then click the **View** button.
 
 ![alt text](../img/icebergdv12.png)
+
+
+## :star: Well done - You've completed these labs!
