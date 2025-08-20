@@ -446,4 +446,4 @@ Next, we’ll use Cloudera DataViz to build interactive dashboards that support 
 ![alt text](../img/icebergdv12.png)
 
 
-## :star: Well done - You've completed these labs!
+## :star: Well done - You've completed this section of the labs!
