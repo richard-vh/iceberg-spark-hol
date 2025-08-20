@@ -61,7 +61,7 @@ The second section demonstrates Iceberg's role as a unified table format across 
 Detailed instructions are provided in the step_by_step_guides below. The hand-on labs are divided into trwo sections:
 
 * [Section 1: Spark and Iceberg on Cloudera Data Engineering Data Hubs](step-by-step-guides/Section%201%3A%20Spark%20on%20Cloudera%20Data%20Engineering%20Data%20Hubs.md)
-* [Section 2: Demonstrating Iceberg Capabilities across the Data Lifecycle and Cloudera Product Stack](#section-2-demonstrating-iceberg-capabilities-across-the-data-lifecycle-and-cloudera-product-stack)
+* [Section 2: Demonstrating Iceberg Capabilities across the Data Lifecycle and Cloudera Product Stack](step-by-step-guides/Section%202%3A%20Demonstrating%20Iceberg%20Capabilities%20across%20the%20Data%20Lifecycle%20and%20Cloudera%20Product%20Stack.md)
 
 ## Setup Instructions
 
