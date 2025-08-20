@@ -67,6 +67,8 @@ from pyspark.sql import SparkSession
 spark = SparkSession.builder \
                     .appName("{}_spark_session".format(username)) \
                     .getOrCreate()
+
+print("Code block completed")
 ```
 
 4. Execute the cell code by clicking the **⏵** button or you can select cmd+enter on your keyboard to do the same.
@@ -133,6 +135,8 @@ spark.sql("""
     ('DE', 'Germany', 83149300, 357022.0),
     ('IT', 'Italy', 60262770, 301340.0)
 """.format(username))
+
+print("Code block completed")
 ```
 ![alt text](../img/jupyter3.png)
 
@@ -141,6 +145,8 @@ spark.sql("""
 # Query the table
 df = spark.sql("SELECT * FROM default.{}_managed_countries".format(username))
 df.show()
+
+print("Code block completed")
 ```
 3.Add a new cell to the notebook and run each code block to look at the properties of the table.
 ```ruby
@@ -152,6 +158,8 @@ spark.sql("SHOW CREATE TABLE default.{}_managed_countries".format(username)).sho
 
 # Show the table properties
 spark.sql("SHOW TBLPROPERTIES default.{}_managed_countries".format(username)).show(truncate=False)
+
+print("Code block completed")
 ```
 Describing the tables shows us the column names, their data types and column comments.
 
@@ -257,6 +265,8 @@ spark.sql("""
 
 df = spark.sql("SELECT * FROM default.{}_english_football_teams".format(username))
 df.show(truncate=False)
+
+print("Code block completed")
 ```
 2. Look at the code and output and verify the inserts and update work as you would expect.
 
@@ -279,6 +289,8 @@ spark.sql("""
 
 df = spark.sql("SELECT * FROM default.{}_english_football_teams".format(username))
 df.show(truncate=False)
+
+print("Code block completed")
 ```
 2.  Look at the code and output and verify the delete works as you would expect.
 
@@ -331,6 +343,8 @@ spark.sql("""
 
 # Show table properties to verify it's set for COW
 spark.sql("SHOW TBLPROPERTIES default.{}_cow_countries".format(username)).show(truncate=False)
+
+print("Code block completed")
 ```
 
 ### Iceberg Merge-on-Read (MOR) Table
@@ -372,6 +386,8 @@ spark.sql("""
 
 # Show table properties to verify it's set for MOR
 spark.sql("SHOW TBLPROPERTIES default.{}_mor_countries".format(username)).show(truncate=False)
+
+print("Code block completed")
 ```
 
 > [!TIP] 
@@ -475,6 +491,8 @@ df.show(truncate=False)
 # View the create table
 df = spark.sql("SHOW CREATE TABLE default.{}_zoo_animals_schema_evo".format(username))
 df.show(truncate=False)
+
+print("Code block completed")
 ```
 ### Iceberg Partition Evolution
 
@@ -542,6 +560,8 @@ df.show(truncate=False)
 # If you want to gather more detailed partition-level information
 df = spark.sql("SELECT * FROM default.{}_zoo_animals_partition_evo.files".format(username))
 df.show(truncate=False)
+
+print("Code block completed")
 ```
 
 ## Lab 5: Iceberg Time Travel & Rollbacks using Snapshots
@@ -648,6 +668,8 @@ df_time_travel = spark.sql("""
     SELECT * FROM default.{0}_european_cars_time_travel VERSION AS OF {1}
 """.format(username,rollback_snapshot_id_0))
 df_time_travel.show()
+
+print("Code block completed")
 ```
 
 ### Rollback Tables Using Snapshots
@@ -716,6 +738,8 @@ spark.sql("CALL spark_catalog.system.rollback_to_snapshot('default.{0}_european_
 # Show the table data after rollback
 df = spark.sql("SELECT * FROM default.{}_european_cars_rollback".format(username))
 df.show(truncate=False)
+
+print("Code block completed")
 ```
 
 ## Lab 6: Iceberg Tagging, Branching and Merging
@@ -785,6 +809,7 @@ spark.sql("SELECT * FROM default.{}_belfast_landmarks.refs".format(username)).sh
 
 spark.sql("SELECT * FROM default.{}_belfast_landmarks VERSION AS OF '5DAY_TAG'".format(username)).show(100, False)
 
+print("Code block completed")
 ```
 
 ### Creating Branches in Iceberg
@@ -840,6 +865,8 @@ spark.sql("select * from default.{}_healthcare_patient_data.branch_testing_branc
 
 # Main table is untouched 
 spark.sql("select * from default.{}_healthcare_patient_data".format(username)).show()
+
+print("Code block completed")
 ```
 
 ### Merging Iceberg Branches
@@ -921,6 +948,8 @@ spark.sql("select * from default.{}_healthcare_patient_data".format(username)).s
 
 # Drop the branch after the merge if no longer needed
 spark.sql("ALTER TABLE default.{}_healthcare_patient_data DROP BRANCH testing_branch".format(username))
+
+print("Code block completed")
 ```
 
 ## Lab 7: Migrating tables from Hive to Iceberg
@@ -971,6 +1000,8 @@ spark.sql("SELECT * FROM default.{}_cloudera_parquet".format(username)).show()
 
 # Describe the table after migration to confirm Iceberg format
 spark.sql("DESCRIBE FORMATTED default.{}_cloudera_parquet".format(username)).show()
+
+print("Code block completed")
 ```
 
 ### “Create Table As” (CATS) Migration from Vanilla Parquet to Iceberg
@@ -1022,6 +1053,8 @@ spark.sql("SELECT * FROM default.{}_ctas_cloudera_iceberg".format(username)).sho
 
 # Describe the Iceberg table structure
 spark.sql("DESCRIBE FORMATTED default.{}_ctas_cloudera_iceberg".format(username)).show()
+
+print("Code block completed")
 ```
 
 ## Lab 8: Iceberg Table Maintenance
@@ -1142,4 +1175,7 @@ spark.sql("""
 
 # Verify the current state of the table
 spark.sql("SELECT * FROM default.{}_machinery_compaction".format(username)).show(truncate=False)
+
+print("Code block completed")
 ```
+## :star: Well done - You've completed these labs!
