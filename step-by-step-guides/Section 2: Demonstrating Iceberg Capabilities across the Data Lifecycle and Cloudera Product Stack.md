@@ -426,6 +426,6 @@ Next, we’ll use Cloudera DataViz to build interactive dashboards that support 
     
 ![alt text](../img/icebergdv11.png)
 
-12. In the Visual's attributes section, click the play &#9658; button next to the X Axis **sum(laptop_id)** field. This will open the **Field Properties** context dialog. The the field property Aggregates section, uncheck the **Sum** aggregate. Click the play &#9658; button next to the Y Axis **sum(anomaly)** field and in the field propoerties **Order and Top k** section, check the **Descending** option. Finally click the **Refresh Visual** button - you will see the new visual on the dashboard change to an **Bar Chart** visual. 
+12. In the Visual's attributes section, click the play &#9658; button next to the X Axis **sum(laptop_id)** field. This will open the **Field Properties** context dialog. The the field property Aggregates section, uncheck the **Sum** aggregate. Click the play &#9658; button next to the Y Axis **sum(anomaly)** field and in the field properties **Order and Top k** section, check the **Descending** option. , in the **Alias** section change the field name to **Total Anomalies**. Finally click the **Refresh Visual** button - you will see the new visual on the dashboard change to an **Bar Chart** visual. 
 
 ![alt text](../img/icebergdv12.png)
