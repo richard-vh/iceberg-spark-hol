@@ -414,6 +414,18 @@ Next, we’ll use Cloudera DataViz to build interactive dashboards that support 
 
 ![alt text](../img/icebergdv8.png)
 
-9. In the Visual attributes section, from the field shelves drag **latitude** and **longitude** into the Visuals **Dimensions** attrubute field and drag **anomaly** into the Visuals **Measures** attribute field. Finally click the **Refresh Visual** button. You will see the deafult Table visual on the dashboard change to an Interactive Map visual.
+9. In the Visual's attributes section, from the field shelves drag **latitude** and **longitude** into the Visuals **Dimensions** attribute field and drag **anomaly** into the Visuals **Measures** attribute field. Finally click the **Refresh Visual** button. You will see the default Table visual on the dashboard change to an Interactive Map visual.
 
  ![alt text](../img/icebergdv9.png)
+
+10. Let's add a new visual to the dashboard. At the top of the right menu click on the **+ Visuals** button. This will add a new visual to the dashboard based on your existing dataset (You can select different datasets but for the porposes of the lab we'll use the same one).
+
+![alt text](../img/icebergdv10.png)
+
+14. Highlight the new visual on the dashbaord and in the **Visuals** section, select the **Bar** visual icon. In the Visual's attributes section, from the field shelves drag **laptop_id** into the Visuals **X Axis** attribute field and drag **anomaly** into the Visuals **Y Axis** attribute field.
+    
+![alt text](../img/icebergdv11.png)
+
+12. In the Visual's attributes section, click the play &#9658; button next to the X Axis **sum(laptop_id)** field. This will open the **Field Properties** context dialog. The the field property Aggregates section, uncheck the **Sum** aggregate. Click the play &#9658; button next to the Y Axis **sum(anomaly)** field and in the field propoerties **Order and Top k** section, check the **Descending** option. Finally click the **Refresh Visual** button - you will see the new visual on the dashboard change to an **Bar Chart** visual. 
+
+![alt text](../img/icebergdv12.png)
