@@ -445,6 +445,6 @@ Next, we’ll use Cloudera DataViz to build interactive dashboards that support 
 
 ![alt text](../img/icebergdv12.png)
 
-Of course you can do so much more with Data Viz but this is just a short introduction.
+Of course you can do so much more with Data Viz, this is just a short introduction.
 
 ## :star: Well done - You've completed this section of the labs!
