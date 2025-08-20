@@ -6,6 +6,38 @@ Cloudera Data Hub is a cloud service for creating and managing secure, isolated,
 
 The service provides pre-configured templates for common workloads but also allows for extensive customization through reusable resources like cluster definitions, templates, and scripts. This enables agile, on-demand cluster creation and automation via a web interface or CLI, with all clusters linked to a central Data Lake for security and governance.
 
+### Agenda
+
+* [Before Starting the Labs](#before-starting-the-labs)<br/>
+* [Lab 1. Creating Iceberg Tables](#lab-1-creating-iceberg-tables)<br/>
+  * [Creating an Iceberg Table](#creating-an-iceberg-table)<br/>
+  * [Explore the Table Storage Location](#explore-the-tables-storage-location)<br/>
+  * [Understanding the Metadata Files](#understanding-the-metadata-files)<br/>
+* [Lab 2. Iceberg data Manipulation](#lab-2-iceberg-data-manipulation)<br/>
+  * [Best Practices for Managing Data](#best-practices-for-managing-data)<br/>
+  * [Iceberg Data Inserts and Updates](#iceberg-data-inserts-and-updates)<br/>
+  * [Iceberg Data Deletion](#iceberg-data-deletion)<br/>
+* [Lab 3: Iceberg Tables Types (COW and MOR)](#lab-3-iceberg-tables-types-cow-and-mor)<br/>
+  * [Iceberg Copy-on-Write (COW) Table](#iceberg-copy-on-write-cow-table)<br/>
+  * [Iceberg Merge-on-Read (MOR) Table](#iceberg-merge-on-read-mor-table)<br/>
+* [Lab 4: Schema and Partition Evolution](#lab-4-schema-and-partition-evolution)<br/>
+  * [Iceberg Schema Evolution](#iceberg-schema-evolution)<br/>
+  * [Iceberg Partition Evolution](#iceberg-partition-evolution)<br/>
+* [Lab 5: Iceberg Time Travel & Rollbacks using Snapshots](#lab-5-iceberg-time-travel--rollbacks-using-snapshots)<br/>
+  * [Understanding Time Travel in Iceberg](#understanding-time-travel-in-iceberg)<br/>
+  * [Rollback Tables Using Snapshots](#rollback-tables-using-snapshots)<br/>
+* [Lab 6: Iceberg Tagging, Branching and Merging](#lab-6-iceberg-tagging-branching-and-merging)<br/>
+  * [Iceberg Tagging](#iceberg-tagging)<br/>
+  * [Creating Branches in Iceberg](#creating-branches-in-iceberg)<br/>
+  * [Merging Iceberg Branches](#merging-iceberg-branches)<br/>
+* [Lab 7: Migrating tables from Hive to Iceberg](#lab-7-migrating-tables-from-hive-to-iceberg)<br/>
+  * [“CONVERT” In-Place Migration Vanilla Parquet to Iceberg](#convert-in-place-migration-vanilla-parquet-to-iceberg)<br/>
+  * [“Create Table As” (CATS) Migration from Vanilla Parquet to Iceberg](#create-table-as-cats-migration-from-vanilla-parquet-to-iceberg)<br/>
+* [Lab 8: Iceberg Table Maintenance](#lab-8-iceberg-table-maintenance)<br/>
+  * [Iceberg Compaction](#iceberg-compaction)<br/>
+  * [Iceberg Expiring Snapshots](#iceberg-expiring-snapshots)<br/>
+  * [Code Example: Compaction and Expiring Snapshots](#code-example-compaction-and-expiring-snapshots)<br/>
+
 ## Before Starting the Labs
 
 Typically we would SSH onto the node and execute Spark commands via the command line, but for the purposes of this lab we will use JupyterLab notebooks installed on the Data Hub cluster Gateway node for a better lab experience.
