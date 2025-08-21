@@ -11,7 +11,7 @@ The service provides pre-configured templates for common workloads but also allo
 * [Before Starting the Labs](#before-starting-the-labs)<br/>
 * [Lab 1. Creating Iceberg Tables](#lab-1-creating-iceberg-tables)<br/>
   * [Creating an Iceberg Table](#creating-an-iceberg-table)<br/>
-  * [Explore the Table Storage Location](#explore-the-tables-storage-location)<br/>
+  * [Explore the Table Storage Location](#explore-the-table-storage-location)<br/>
   * [Understanding the Metadata Files](#understanding-the-metadata-files)<br/>
 * [Lab 2. Iceberg data Manipulation](#lab-2-iceberg-data-manipulation)<br/>
   * [Best Practices for Managing Data](#best-practices-for-managing-data)<br/>
@@ -95,24 +95,19 @@ If all is good then we're ready to get on with Iceberg on Spark in our Jupyter N
 ### Creating an Iceberg Table
 
 **What is an Iceberg Table?**
-An Iceberg Table is a table where Iceberg manages both the metadata and the data. It’s a fully integrated table that Iceberg can track and manage for you. When you drop an Iceberg Table, Iceberg removes both the metadata and the data itself.
-
-**Use an Iceberg Table when:**
-You need Iceberg to fully handle both the data and metadata.
-You want to manage the entire lifecycle of the table automatically.
-You need atomic operations, such as schema evolution, partition evolution, and time travel.
+An Iceberg table is an open-source table format designed for huge analytic datasets in data lakes. Think of it not as a new data storage format, but as a sophisticated management layer that sits on top of your existing data files (like Parquet, Avro, or ORC) in cloud storage like Amazon S3 or Google Cloud Storage. It brings the reliability and simplicity of traditional SQL tables to the world of big data. At its core, an Iceberg table tracks a list of data files that constitute the table's contents. Unlike older formats like Hive, which rely on tracking files at a directory level, Iceberg tracks individual files. This seemingly small difference is what unlocks a host of powerful features.
 
 **Key benefits and limitations**
-**Benefits:**
-Simplified data management.
-Automatic metadata handling.
-Built-in features like time travel and schema evolution.
-**Limitations:**
-Dropping the table deletes all data.
+	
+* **ACID Transactions**: Iceberg brings atomicity, consistency, isolation, and durability to your data lake. This means that operations are either fully completed or not at all, ensuring that your data remains in a consistent state, even with multiple users reading and writing to the same table simultaneously.
+* **Schema Evolution**: With Iceberg, you can safely add, drop, rename, and even reorder columns in your table without needing to rewrite all the underlying data. This is a massive improvement over older formats where schema changes were often risky and computationally expensive.
+* **Hidden Partitioning**: You can change the way your table is partitioned without breaking existing queries. Iceberg handles the partitioning logic behind the scenes, so users don't need to know the physical layout of the data to write efficient queries.
+* **Time Travel and Rollback**: Every change to an Iceberg table creates a new, immutable snapshot of the table's state. This allows you to query the table as it existed at a specific point in time, which is invaluable for audits, debugging, and reproducing analyses. It also makes it easy to roll back the table to a previous version if a mistake is made.
+* **Efficient Query Performance**: By storing detailed statistics about the data at the file level, Iceberg enables query engines to perform "file pruning." This means the engine can quickly identify and skip reading files that don't contain data relevant to a query, leading to significant performance gains.
 
-**Note:** By default, when you create an Iceberg table, it will be a Copy-on-Write (COW) table. This means that when you modify data, a new version of the data is written, and old data is not overwritten. You can explicitly specify the table type as Copy-on-Write (COW) or Merge-on-Write (MOR) using table properties.
 
 1. For the remainder of this lab we'll do all of our Spark code in in your existing Jupyter notebook created above. Add a new cell to the notebook and run the code below.
+   
 ```ruby
 spark.sql("DROP TABLE IF EXISTS default.{}_managed_countries".format(username))
 
@@ -124,7 +119,7 @@ spark.sql("""
         population INT,
         area DOUBLE
     )
-    USING iceberg TBLPROPERTIES ('format-version' = '2')
+    USING iceberg TBLPROPERTIES
 """.format(username))
 
 # Insert data into the table
@@ -139,7 +134,7 @@ print("Code block completed")
 ```
 ![alt text](../img/jupyter3.png)
 
-2.Add a new cell to the notebook and run each code block below to query the table.
+2. Add a new cell to the notebook and run each code block below to query the table.
 ```ruby
 # Query the table
 df = spark.sql("SELECT * FROM default.{}_managed_countries".format(username))
@@ -147,7 +142,7 @@ df.show()
 
 print("Code block completed")
 ```
-3.Add a new cell to the notebook and run each code block to look at the properties of the table.
+3. Add a new cell to the notebook and run each code block to look at the properties of the table.
 ```ruby
 # Describe the table
 spark.sql("DESCRIBE default.{}_managed_countries".format(username)).show()
@@ -162,7 +157,7 @@ print("Code block completed")
 ```
 Describing the tables shows us the column names, their data types and column comments.
 
-The create table statement give us the the current table DDL, including the storage location (not the S3 storage path, Iceberg current snapshot id, storage file type, format-version which indicates if it's an Iceberg v1 or v2 table and the different write modes  Merge-On-Read (MOR - default) or Copy-On-Write (COW).
+The create table statement give us the the current table DDL, including the storage location (note the S3 storage path, Iceberg current snapshot id, storage file type, format-version which indicates if it's an Iceberg v1 or v2 table and the different write modes  Merge-On-Read (MOR) or Copy-On-Write (COW).
 
 > [!NOTE] 
 > Iceberg v2 builds upon v1 by adding row-level updates and deletes, enabled through merge-on-read and delete files. This allows for more efficient modification of data within immutable file formats like Parquet, Avro, and ORC, without rewriting entire files. Iceberg v1 primarily focused on supporting large analytic tables with immutable file formats and snapshot-based isolation. _
@@ -425,7 +420,7 @@ spark.sql("""
         animal_id STRING,
         animal_name STRING
     )
-    USING iceberg TBLPROPERTIES ('format-version' = '2')
+    USING iceberg TBLPROPERTIES
 """.format(username))
 
 # Insert sample data
@@ -502,7 +497,7 @@ spark.sql("""
         species_name STRING,
         habitat STRING
     )
-    USING iceberg TBLPROPERTIES ('format-version' = '2')
+    USING iceberg TBLPROPERTIES
     PARTITIONED BY (animal_id)
 """.format(username))
 
