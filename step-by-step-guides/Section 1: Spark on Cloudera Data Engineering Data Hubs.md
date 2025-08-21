@@ -47,7 +47,7 @@ Typically we would SSH onto the node and execute Spark commands via the command 
 Click on the following link to open JupyterLab on the Gateway node and log on using your workload user name and password provided by the facilitator i.e user001/hsgdguquuqyququ:
 
 ```ruby
-https://intelos-spark-hol-gateway2.se-sandb.a465-9q4k.cloudera.site:9443/
+https://workshop-de-v1-gateway0.nemea-ho.sm02r9.b0.cloudera.site:9443/
 ```
 
 1. In JupyterLb create a new notebook by selecting **File -> New -> Notebook**.
