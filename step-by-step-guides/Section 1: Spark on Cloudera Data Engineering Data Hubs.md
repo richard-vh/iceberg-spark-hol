@@ -184,28 +184,29 @@ The **/metadata** directory contains snapshots, schema history, and manifest fil
 
 ![alt text](../img/iceberg-metadatafiles.png)
 
+#### How These Files Work Together in Iceberg:
+  * The **metastore** contains a pointer to the table's current **metadata** file.
+  * A **metadata** JSON file (.metadata.json) defines the table schema and has references to snapshots.
+  * A **snapshot** file (snap-*.avro) records changes and links to manifest lists.
+  * A **manifest list** file (*-m0.avro) references **manifest** files that contain details of individual data files.
+
 #### Metadata Files (*.metadata.json)
   * **Example Files**: 00000-bc161db1-05f2-4d64-baab-69ca2070db33.metadata.json  
   * **Purpose**: Stores table-level metadata such as schema, partitioning, snapshots, and file references. Each time the table structure changes (e.g., schema evolution, snapshot creation), a new metadata JSON file is generated. Older metadata files are retained to support time travel and rollback.
   * **Data Type**: JSON format (human-readable, structured key-value pairs).
-* **Why?**: JSON allows Iceberg to store metadata in a flexible, easily accessible format. New versions can be created without modifying existing files, enabling schema evolution.
+  * **Why?**: JSON allows Iceberg to store metadata in a flexible, easily accessible format. New versions can be created without modifying existing files, enabling schema evolution.
 
 #### Snapshot Files (snap-*-*.avro)
   * Example Files: snap-1185275548636187694-1-f7f549e1-bd07-44da-b170-8973c2e6e3d6.avro  
   * Purpose: Tracks table state at a specific point in time (snapshot ID, timestamp, manifest list, etc.). Allows for time travel and rollbacks to previous versions of the table.
   * Data Type: Apache Avro format (binary, optimized for structured data storage).
   * Why? Storing snapshots in Avro provides efficient serialization while keeping metadata compact and performant. Enables fast lookup of previous states for Iceberg’s time travel feature.
-  * 
+    
 #### Manifest List Files (*-m0.avro)
   * **Example Files**: 3ecfea4f-9e06-45a9-bd7c-430fe4758283-m0.avro 
   * **Purpose**: Stores a list of manifest files associated with a snapshot. Helps Iceberg quickly determine which data files belong to which snapshot without scanning the entire table.
   * **Data Type**: Apache Avro format (binary, optimized for fast read/write).
   * **Why**?: Avro is compact and supports schema evolution, making it ideal for metadata storage. Using Avro instead of JSON for large metadata speeds up querying and file tracking.
-
-#### How These Files Work Together in Iceberg:
-  * A **metadata** JSON file (.metadata.json) defines the table schema and references snapshots.
-  * A **snapshot** file (snap-*.avro) records changes and links to manifest lists.
-  * A **manifest list** file (*-m0.avro) references **manifest** files that contain details of individual data files.
 
 
 ## Lab 2. Iceberg data Manipulation 
@@ -292,12 +293,9 @@ Iceberg tables support different storage strategies to balance performance, stor
   * **Copy-on-Write (COW)**: Ensures immutability by writing new files on every update, making it ideal for ACID transactions and historical auditing.
   * **Merge-on-Read (MOR)**: Optimizes write performance by storing changes as delta files, merging them at query time—useful for real-time ingestion.
     
-Each strategy has trade-offs, making them suitable for different workloads. The following sections provide details, comparisons, and implementation examples.
+Each strategy has trade-offs, making them suitable for different workloads. 
 
-> [!TIP] 
-> There are pros and cons to choosing which Iceberg write mode to use. This table can help you decide which strategies to use for your Iceberg table.
-
-**Merge-On-Read (MOR)**
+ **Merge-On-Read (MOR)**
  * Writes are efficient.
  * Reads are inefficient due to read amplification, but regularly scheduled compaction can reduce inefficiency.
  * A good choice when streaming.
@@ -400,10 +398,6 @@ Schema evolution in Iceberg allows you to modify the structure of your tables ov
  * Backwards compatibility: Allows for schema changes that are compatible with existing data, meaning that you can evolve the schema without breaking old queries or affecting historical data.
  * Simplifying data management: Allows incremental changes to the schema without needing full table rewrites.
 
-**Considerations and Caveats for Schema Evolution**
- * Compatibility: Ensure that new schema changes are compatible with existing data. Some operations, such as changing a column's type, require careful consideration.
- * Versioning: Iceberg maintains a versioned history of schema changes, which allows you to track and revert changes if needed. However, large schema modifications across many partitions may require additional resources for processing.
- * Impact on performance: While Iceberg provides schema evolution capabilities, unnecessary schema changes (such as renaming or adding many columns) could lead to performance degradation in some cases.
 
 **Code Example:**
 
@@ -548,7 +542,7 @@ print("Code block completed")
 
 **What is Time Travel in Iceberg?**
 Time travel in Iceberg allows you to query a table as it existed at a specific point in time in the past. This feature leverages Iceberg's snapshot-based architecture to track all changes made to the data over time. When you perform time travel, Iceberg will provide data based on the state of the table at a specified snapshot or timestamp.
-Time travel is supported by specifying a timestamp or snapshot ID when querying the table, which enables access to historical data without having to maintain separate copies of the data.
+Time travel is supported by specifying a timestamp or snapshotid when querying the table, which enables access to historical data without having to maintain separate copies of the data.
 
 **How Time Travel enhances data management**
 Historical queries: Time travel enables you to perform analysis on data as it existed at any previous time. This is valuable for auditing, debugging, and investigating historical trends.
@@ -561,7 +555,7 @@ Simplifying rollbacks: Instead of reloading or restoring data from backups, you 
 	* Data consistency: Ensure that queries are consistent with data at specific points in time, even in dynamic environments.
 	* Bug investigation: Time travel is useful when tracking data issues or discrepancies in reports over time.
  * Limitations:
-	* Snapshot retention: Older snapshots can be pruned to optimize storage, which may impact time travel for long periods in the past.
+	* Snapshot retention: Older snapshots can be expired to optimize storage, which may impact time travel for long periods in the past.
 	* Performance: Querying historical data may take longer depending on the size and number of snapshots involved.
 	* Storage costs: Maintaining historical snapshots may increase storage costs.
 
@@ -654,7 +648,7 @@ print("Code block completed")
 Rollback in Iceberg allows you to revert the table's state to a specific snapshot, undoing any subsequent changes. This is useful in scenarios where data corruption, accidental deletion, or unwanted changes occur. By rolling back to a previous snapshot, you can restore the table to its desired state.
 
 **Key Points on Rollback:**
- * Rollback to a Snapshot: You can roll back the table by specifying a snapshot ID that corresponds to the point in time you wish to revert to.
+ * Rollback to a Snapshot: You can roll back the table by specifying a snapshotid that corresponds to the point in time you wish to revert to.
  * How it works: The rollback operation rewrites the table to the state of the specified snapshot, effectively "reverting" any changes made after that snapshot.
  * Usage: Rollback can be useful in production environments where you need to ensure data integrity and recover from accidental modifications.
 
@@ -791,7 +785,7 @@ print("Code block completed")
 ### Creating Branches in Iceberg
 
 **What is branching in Iceberg?**
-Branching in Iceberg is the ability to create isolated environments to work with the data. These branches allow you to perform operations such as inserting, updating, or deleting data without affecting the main production data. Branching in Iceberg helps in creating versions of the data for testing, experimentation, or new features, and once the branch is ready, it can be merged back into the main branch.
+Branching in Iceberg is the ability to create isolated environments to work with the data. Think of how branches work it Git repositories. These branches allow you to perform operations such as inserting, updating, or deleting data without affecting the main production data. Branching in Iceberg helps in creating versions of the data for testing, experimentation, or new features, and once the branch is ready, it can be merged back into the main branch.
 
 **Why and when to use branches?**
  * Testing new features (e.g., testing new health metrics without affecting the existing production data).
@@ -936,7 +930,7 @@ print("Code block completed")
 
 **Background**
 
-In-place migration from Parquet to Iceberg allows seamless conversion without moving data or creating a new table.
+In-place migration from Parquet to Iceberg allows seamless conversion without moving data or creating a new table and is almost instantaneous as only the metadata is rewritten. Data files are not affected.
 
 **Code Example:**
 
@@ -984,7 +978,7 @@ print("Code block completed")
 
 **Background**
 
-When migrating from Hive to Iceberg, one of the common approaches is to use the CREATE TABLE AS (CTAS) statement. This method allows you to create a new Iceberg table and populate it with data from an existing Hive table in one step.
+When migrating from Hive to Iceberg, one of the common approaches is to use the CREATE TABLE AS (CTAS) statement. This method allows you to create a new Iceberg table and populate it with data from an existing Hive table in one step, but for very large tables this can be more resource intensive and time consuming.
 
 **Code Example:**
 
@@ -1039,7 +1033,7 @@ print("Code block completed")
 
 **What is Iceberg Compaction?**
 
-Iceberg compaction is the process of merging small data files within an Iceberg table into larger files to improve query performance and reduce metadata overhead. Iceberg writes immutable files, and over time, frequent inserts, updates, and deletes can lead to small files that impact efficiency.
+Iceberg compaction is the process of merging small data files within an Iceberg table into larger files to improve query performance and reduce metadata overhead. Iceberg writes immutable files, and over time, frequent inserts, updates, and deletes can lead to many small files that impact efficiency.
 
 **Why is it important?**
 
@@ -1052,10 +1046,7 @@ Iceberg compaction is the process of merging small data files within an Iceberg 
 
  * Reduced Query Latency: Faster scans with fewer files.
  * Lower Metadata Management Overhead: Smaller metadata files and fewer manifest entries.
- * Potential Higher Write Costs: Compacting frequently can increase write costs if not managed properly.
-
-> [!NOTE] 
-> Impact on Time Travel: Since compaction rewrites data files, older snapshots may lose access to the original files, potentially limiting time travel capabilities. 
+ * Potential Higher Write Costs: Compacting too frequently can increase write costs if not managed properly.
 
 ### Iceberg Expiring Snapshots
 
