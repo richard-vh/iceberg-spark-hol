@@ -292,24 +292,32 @@ print("Code block completed")
 
 ## Lab 3: Iceberg Tables Types (COW and MOR) 
 
-Iceberg tables support different storage strategies to balance performance, storage efficiency, and query speed. This section introduces the three primary approaches
+Iceberg tables support different storage strategies to balance performance, storage efficiency, and query speed. This section introduces the two primary approaches.
 
   * **Copy-on-Write (COW)**: Ensures immutability by writing new files on every update, making it ideal for ACID transactions and historical auditing.
   * **Merge-on-Read (MOR)**: Optimizes write performance by storing changes as delta files, merging them at query time—useful for real-time ingestion.
     
 Each strategy has trade-offs, making them suitable for different workloads. The following sections provide details, comparisons, and implementation examples.
 
+> [!TIP] 
+> There are pros and cons to choosing which Iceberg write mode to use. This table can help you decide which strategies to use for your Iceberg table.
+
+**Merge-On-Read (MOR)**
+ * Writes are efficient.
+ * Reads are inefficient due to read amplification, but regularly scheduled compaction can reduce inefficiency.
+ * A good choice when streaming.
+ * A good choice when frequently writing or updating, such as running hourly batch jobs.
+ * A good choice when the percentage of data change is low.
+
+**Copy-On-Write (COW)**
+ * Reads are efficient.
+ * A good choice for bulk updates and deletes, such as running a daily batch job.
+ * Writes are inefficient due to write amplification, but the need for compaction is reduced.
+ * A good choice when the percentage of data change is high.
+
 ### Iceberg Copy-on-Write (COW) Table
 
-**What is a Copy-on-Write Table?**: A Copy-on-Write (COW) table in Iceberg creates a new version of the data on each modification. The old data is not overwritten. Instead, a new version of the data is written to disk. This approach ensures that the data remains immutable, which makes it suitable for use cases that require strong consistency and atomicity.
-
-**How it differs to Merge-on-Read:**
-  * Merge-on-Read: Uses a merge operation when reading data, but doesn’t alter the underlying files, unlike Copy-on-Write, which rewrites the files with each update.
-    
-**Key Use Cases:**
-  * Use Copy-on-Write when you need full ACID transaction support for your data.
-  * It’s ideal for batch jobs where the data doesn’t change frequently.
-  * Suitable for applications where old versions of the data may need to be retained for audit purposes.
+**What is a Copy-on-Write Table?**: Copy-on-Write (COW) is where instead of modifying data directly, the system creates a complete copy of the data file with the changes applied. This method makes reading data incredibly fast and efficient, as queries can simply access a clean, final version of a file without any extra processing. The downside, however, is that writing data can be slow and expensive. Even a tiny update to a single row forces the entire file to be duplicated and rewritten. This makes frequent, small changes inefficient and can lead to conflicts if multiple writes occur at the same time. While this approach is poorly suited for minor edits, it becomes ideal for large, bulk updates where changing a significant portion of the file is necessary anyway.
 
 **Code Example:**
 
@@ -344,15 +352,8 @@ print("Code block completed")
 ```
 
 ### Iceberg Merge-on-Read (MOR) Table
-**What is a Merge-on-Read Table?**: Merge-on-Read (MOR) tables optimize write performance by storing changes as delta files instead of rewriting entire data files. These delta files are merged at query time, which reduces write latency but increases read complexity. This approach is particularly useful for real-time ingestion and event-driven applications, where updates occur frequently.
+**What is a Merge-on-Read Table?**: Merge-on-Read (MOR) is where, instead of rewriting large files for every modification, changes are simply recorded in separate, smaller files. This approach makes writing new data, like updates or deletions, significantly faster. The trade-off is that more work is required during a read operation; the system must combine the original data with the separate change files on the fly to present the most current version. In Apache Iceberg, this is handled using delete files. When you update or delete a row, the change is logged in a delete file. During a query, Iceberg uses these delete files to know which rows to ignore from the old data files and which new rows to include. Eventually, compaction merges the original data and all the changes into new, clean files, which speeds up future reads.
 
-**How it Differs from Copy-on-Write**:
-  * Copy-on-Write (COW): Writes a new file for each modification, ensuring immutability but increasing storage usage.
-    
-**Key Use Cases**:
-  * Real-time ingestion of data where updates occur frequently.
-  * Event-driven architectures where append operations dominate.
-  * Optimized for streaming workloads, reducing write latency while maintaining historical changes.
 
 **Code Example:**
 
@@ -385,22 +386,6 @@ spark.sql("SHOW TBLPROPERTIES default.{}_mor_countries".format(username)).show(t
 
 print("Code block completed")
 ```
-
-> [!TIP] 
-> There are pros and cons to choosing which Iceberg write mode to use. This table can help you decide which strategies to use for your Iceberg table.
-
-**Merge-On-Read (MOR)**
- * Writes are efficient.
- * Reads are inefficient due to read amplification, but regularly scheduled compaction can reduce inefficiency.
- * A good choice when streaming.
- * A good choice when frequently writing or updating, such as running hourly batch jobs.
- * A good choice when the percentage of data change is low.
-
-**Copy-On-Write (COW)**
- * Reads are efficient.
- * A good choice for bulk updates and deletes, such as running a daily batch job.
- * Writes are inefficient due to write amplification, but the need for compaction is reduced.
- * A good choice when the percentage of data change is high.
 
 ## Lab 4: Schema and Partition Evolution
 
