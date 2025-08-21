@@ -45,7 +45,7 @@ The second section demonstrates Iceberg's role as a unified table format across 
 ### Section 2: Demonstrating Iceberg Capabilities across the Data Lifecycle and Cloudera Product Stack
 * Before Starting the Labs
 * Lab 1. Streaming Data Ingestion to Iceberg using Cloudera Data Flow
-  * [verview of the Cloudera Data Flow Service
+  * Overview of the Cloudera Data Flow Service
   * Deploy a Custom Data Flow Template
 * Lab 2. Machine Learning with Iceberg tables using Cloudera AI
   * Creating and Setting up your Cloudera AI Project
