@@ -51,7 +51,7 @@ https://workshop-de-v1-gateway0.nemea-ho.sm02r9.b0.cloudera.site:9443/
 ```
 
 1. In JupyterLb create a new notebook by selecting **File -> New -> Notebook**.
-2. Click the **Select** button to acceopt the default kernel **Python3 (ipykernel)**.
+2. Click the **Select** button to accept the default kernel **Python3 (ipykernel)**.
 
 ![alt text](../img/jupyter1.png)
 
