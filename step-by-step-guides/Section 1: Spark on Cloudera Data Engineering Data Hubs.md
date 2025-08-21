@@ -219,9 +219,6 @@ The /metadata directory contains snapshots, schema history, and manifest files, 
   * Start with a comprehensive data model
   * Ensure that the schema is well-defined and follows consistent naming conventions.
   * Leverage nested structures for complex data
-  * Consider future analytics needs when defining partitions
-  * Avoid frequest schema and partition changes
-  * Monitor table performance as data grows, particularly with large updates.
 
 ### Iceberg Data Inserts and Updates
 
