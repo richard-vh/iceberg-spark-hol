@@ -142,7 +142,7 @@ Data Flow Templates make it easier to reuse and distribute data flows or specifi
 
 ![alt text](../img/icebergcdf12.png)
 
-3. In the **Create New Draft** popup screen, select **hol-aws-env** for the **Target Namespace**, **Workshop** for the **Target Project** and **userxxx-hol-iceberg-populator** for the **Draft Name** substituting your assigned user id. Then click the **Create** button. This will display the **Test Session** config page. Accept all the default values and click the **Start Test Session** button.
+3. In the **Create New Draft** popup screen, select **nemea-hol-v2-cdp-env** for the **Target Namespace**, **Workshop** for the **Target Project** and **userxxx-hol-iceberg-populator** for the **Draft Name** substituting your assigned user id. Then click the **Create** button. This will display the **Test Session** config page. Accept all the default values and click the **Start Test Session** button.
 
 ![alt text](../img/icebergcdf13.png)
 
