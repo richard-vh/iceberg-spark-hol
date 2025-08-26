@@ -120,7 +120,7 @@ An Iceberg table is an open-source table format designed for huge analytic datas
 1. For the remainder of this lab we'll do all of our Spark code in in your existing Jupyter notebook created above. Add a new cell to the notebook and run the code below.
    
 ```ruby
-spark.sql("DROP TABLE IF EXISTS default.{}_managed_countries".format(username))
+spark.sql("DROP TABLE IF EXISTS default.{}_managed_countries PURGE".format(username))
 
 # Create an Iceberg table for European countries (COW by default)
 spark.sql("""
