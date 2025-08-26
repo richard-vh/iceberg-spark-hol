@@ -168,7 +168,7 @@ print("Code block completed")
 ```
 Describing the tables shows us the column names, their data types and column comments.
 
-The create table statement give us the the current table DDL, including the storage location (note the S3 storage path, Iceberg current snapshot id, storage file type, format-version which indicates if it's an Iceberg v1 or v2 table and the different write modes  Merge-On-Read (MOR) or Copy-On-Write (COW).
+The create table statement give us the the current table DDL, including the storage location (note the S3 storage path, Iceberg current snapshot id, storage file type, format-version which indicates if it's an Iceberg v1 or v2 table.
 
 > [!NOTE] 
 > Iceberg v2 builds upon v1 by adding row-level updates and deletes, enabled through merge-on-read and delete files. This allows for more efficient modification of data within immutable file formats like Parquet, Avro, and ORC, without rewriting entire files. Iceberg v1 primarily focused on supporting large analytic tables with immutable file formats and snapshot-based isolation. _
