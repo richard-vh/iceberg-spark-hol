@@ -424,7 +424,7 @@ spark.sql("""
         animal_id STRING,
         animal_name STRING
     )
-    USING iceberg TBLPROPERTIES
+    USING iceberg
 """.format(username))
 
 # Insert sample data
@@ -501,7 +501,7 @@ spark.sql("""
         species_name STRING,
         habitat STRING
     )
-    USING iceberg TBLPROPERTIES
+    USING iceberg
     PARTITIONED BY (animal_id)
 """.format(username))
 
