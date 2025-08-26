@@ -162,24 +162,6 @@ The create table statement give us the the current table DDL, including the stor
 > [!NOTE] 
 > Iceberg v2 builds upon v1 by adding row-level updates and deletes, enabled through merge-on-read and delete files. This allows for more efficient modification of data within immutable file formats like Parquet, Avro, and ORC, without rewriting entire files. Iceberg v1 primarily focused on supporting large analytic tables with immutable file formats and snapshot-based isolation. _
 
-### Explore the Table Storage Location
-
-The SHOW CREATE TABLE command that you ran above shows the Iceberg table's definition. Lets take a look at the storage location so that we can understand how Iceberg manages metadata and data. From the SHOW CREATE TABLE response from Jupyter copy the LOCATION path. In Jupyter, open a terminal window in Jupyter and run the following code, substituting the <location_url> with the location you copied.
-
-```ruby
-hdfs dfs -ls  <storage_location>
-```
-![alt text](../img/jupyter4.png)
-
-From the output you can see that the Iceberg table has a **/metadata** and **/data** subfolder structure.
-Now add **/metadata** onto the previous command you ran in the terminal to explore the metadata folder structure.
-```ruby
-hdfs dfs -ls  <storage_location>/metadata
-```
-![alt text](../img/jupyter5.png)
-
-The **/metadata** directory contains snapshots, schema history, and manifest files, allowing Iceberg to manage partitioning and versioning without relying on Hive Metastore, while the **/data** directory holds the actual table data files.
-
 ### Understanding the Metadata Files
 
 ![alt text](../img/iceberg-metadatafiles.png)
@@ -208,6 +190,23 @@ The **/metadata** directory contains snapshots, schema history, and manifest fil
   * **Data Type**: Apache Avro format (binary, optimized for fast read/write).
   * **Why**?: Avro is compact and supports schema evolution, making it ideal for metadata storage. Using Avro instead of JSON for large metadata speeds up querying and file tracking.
 
+### Explore the Table Storage Location
+
+The SHOW CREATE TABLE command that you ran above shows the Iceberg table's definition. Lets take a look at the storage location so that we can understand how Iceberg manages metadata and data. From the SHOW CREATE TABLE response from Jupyter copy the LOCATION path. In Jupyter, open a terminal window in Jupyter and run the following code, substituting the <location_url> with the location you copied.
+
+```ruby
+hdfs dfs -ls  <storage_location>
+```
+![alt text](../img/jupyter4.png)
+
+From the output you can see that the Iceberg table has a **/metadata** and **/data** subfolder structure.
+Now add **/metadata** onto the previous command you ran in the terminal to explore the metadata folder structure.
+```ruby
+hdfs dfs -ls  <storage_location>/metadata
+```
+![alt text](../img/jupyter5.png)
+
+The **/metadata** directory contains snapshots, schema history, and manifest files, allowing Iceberg to manage partitioning and versioning without relying on Hive Metastore, while the **/data** directory holds the actual table data files.
 
 ## Lab 2. Iceberg data Manipulation 
 
