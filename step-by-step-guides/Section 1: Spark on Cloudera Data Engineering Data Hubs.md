@@ -42,7 +42,7 @@ The service provides pre-configured templates for common workloads but also allo
 **Your instructor will run through each of the exercises giving you the oppotunity to view them go through it first. After that you'll be given time to go through each exercise on your own.**
 
 Make sure you set a workload password for your assigned workload user i.e. user001.
-Log into the **Cloudera Data Platform** -> -> Click your **Profile** Name at the bottom left of the Home Page and select **Profile**.
+Log into the **Cloudera Data Platform** -> Click your **Profile** Name at the bottom left of the Home Page and select **Profile**.
 
 ![alt text](../img/workloadpassword1.png)
 
