@@ -109,4 +109,19 @@ journalctl -u jupyterhub -f
 http://<gateway_node_fqdn>:9443
 ```
 
+15. You need to run the following on the gateway node to make sure all the users of the lab have home directories for Jupyter (change based on number of users you added to the group in step 6 above).
+```
+for i in $(seq -w 1 30); do
+  u="user0${i}"
+  if id -u "$u" >/dev/null 2>&1; then
+    echo "[OK] $u exists"
+    sudo mkdir -p "/home/$u"
+  else
+    echo "[CREATE] $u"
+    sudo useradd -m -s /bin/bash "$u"
+  fi
+  sudo chown -R "$u:$u" "/home/$u"
+  sudo chmod 700 "/home/$u"
+done
+```
 
