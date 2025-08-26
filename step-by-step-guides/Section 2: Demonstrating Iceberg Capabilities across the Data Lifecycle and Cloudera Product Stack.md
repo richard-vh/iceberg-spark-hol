@@ -42,18 +42,9 @@ We're going to create some Iveberg tables to use across the labs in this section
 
 ```ruby
 DROP TABLE IF EXISTS default.${username}_laptop_data;
-DROP TABLE IF EXISTS default.${username}_laptop_data_high;
 DROP TABLE IF EXISTS default.${username}_laptop_data_scored;
 
 CREATE TABLE default.${username}_laptop_data (
-  laptop_id STRING,
-  latitude STRING,
-  longitude STRING,
-  temperature STRING,
-  event_ts STRING
-) STORED AS iceberg;
-
-CREATE TABLE default.${username}_laptop_data_high (
   laptop_id STRING,
   latitude STRING,
   longitude STRING,
@@ -71,7 +62,6 @@ CREATE TABLE default.${username}_laptop_data_scored (
 )  STORED AS parquet;
 
 SELECT * FROM default.${username}_laptop_data;
-SELECT * FROM default.${username}_laptop_data_high;
 SELECT * FROM default.${username}_laptop_data_scored;
 ```
 
