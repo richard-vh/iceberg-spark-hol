@@ -51,7 +51,7 @@ vi /etc/jupyterhub/jupyterhub_config.py
 ```
 Add these line to the config file, replacing the <gateway_node_fqdn> with your Gateway Node FQDN and the <cdp_group_name> with the Group Name you created in step 4 of this section:
 ```
-c.JupyterHub.bind_url = 'http://<gateway_node_fqdn>:9443'
+c.JupyterHub.bind_url = 'https://<gateway_node_fqdn>:9443'
 c.ConfigurableHTTPProxy.command = '/opt/anaconda3/bin/configurable-http-proxy'
 c.JupyterHub.ssl_cert = '/var/lib/cloudera-scm-agent/agent-cert/cm-auto-host_cert_chain.pem'
 c.JupyterHub.ssl_key = '/var/lib/cloudera-scm-agent/agent-cert/cm-auto-host_key.pem'
